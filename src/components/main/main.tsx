@@ -170,7 +170,7 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
                     )
                     : (
                       <div className="form-checkbox catalog-filter__block-item" key={item}>
-                        <input className="visually-hidden" type="checkbox" id={item} name={item} onChange={() => handleInputTypesGuitarChange(item)}/>
+                        <input className="visually-hidden" type="checkbox" id={item} name={item} checked={false} onChange={() => handleInputTypesGuitarChange(item)}/>
                         <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
                       </div>
                     )
