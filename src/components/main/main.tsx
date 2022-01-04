@@ -1,6 +1,6 @@
 import CatalogCards from '../catalog-cards/catalog-cards';
 import {
-  filterGuitars,
+  filterGuitarsStringCounts, filterGuitarsType,
   getNameTypeGuitar,
   getStringCounts,
   getStringCountsForTypes,
@@ -17,6 +17,7 @@ import Header from '../header/header';
 import {useState} from 'react';
 import {useHistory, useLocation} from 'react-router-dom';
 import FilterElementString from '../filter-element-string/filter-element-string';
+import Pagination from '../pagination/pagination';
 
 const mapStateToProps = (state: State) => ({
   guitars: state[NameSpace.Data].guitars,
@@ -53,6 +54,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, onChangeSortDirection}: PropsFromRedux):JSX.Element {
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [guitarsPerPage] = useState(9);
+
+  const lastGuitarIndex = currentPage * guitarsPerPage;
+  const firstGuitarIndex = lastGuitarIndex - guitarsPerPage;
+
   const [stringCounts, setStringCounts] = useState<number []>([]);
   const [typesGuitars, setTypesGuitars] = useState<string []>([]);
 
@@ -73,8 +80,12 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
     }
   }
 
-  const filteredGuitars = filterGuitars(guitars, stringCounts);
-  const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitars);
+  const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
+  const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
+  const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
+
+  //для вывода нужных гитар на странице
+  const guitarsPage = sortedGuitars.slice(firstGuitarIndex, lastGuitarIndex);
 
   const stringCountsData = getStringCounts(guitars);
   const typesGuitarsData = getTypesGuitars(guitars);
@@ -125,6 +136,14 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
       const queryString = getQueryString(typesGuitars, [...newStringCounts]);
       history.push(queryString);
     }
+  };
+
+  const changePage = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
   };
 
   return (
@@ -251,24 +270,15 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
               </div>
             </div>
 
-            <CatalogCards guitars={sortedGuitars} />
+            <CatalogCards guitars={guitarsPage} />
 
-            <div className="pagination page-content__pagination">
-              <ul className="pagination__list">
-                <li className="pagination__page pagination__page--active">
-                  <a className="link pagination__page-link" href="1">1</a>
-                </li>
-                <li className="pagination__page">
-                  <a className="link pagination__page-link" href="2">2</a>
-                </li>
-                <li className="pagination__page">
-                  <a className="link pagination__page-link" href="3">3</a>
-                </li>
-                <li className="pagination__page pagination__page--next" id="next">
-                  <a className="link pagination__page-link" href="2">Далее</a>
-                </li>
-              </ul>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              guitarsPerPage={guitarsPerPage}
+              guitarsTotalCount={guitars.length}
+              changePage={changePage}
+              nextPage={nextPage}
+            />
           </div>
         </div>
       </main>

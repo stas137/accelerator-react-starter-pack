@@ -54,7 +54,8 @@ export const getTypesGuitars = (guitars: GuitarsType): string[] => {
   return Array.from(new Set([...stringCountsAll].sort(compareStringLowToHigh)));
 };
 
-export const filterGuitars = (guitars: GuitarsType, stringCounts: number[]): GuitarsType => stringCounts.length ? guitars.filter((item) => new Set(stringCounts).has(item.stringCount)) : guitars;
+export const filterGuitarsType = (guitars: GuitarsType, typesGuitars: string[]): GuitarsType => typesGuitars.length ? guitars.filter((item) => new Set(typesGuitars).has(item.type)) : guitars;
+export const filterGuitarsStringCounts = (guitars: GuitarsType, stringCounts: number[]): GuitarsType => stringCounts.length ? guitars.filter((item) => new Set(stringCounts).has(item.stringCount)) : guitars;
 
 export const getNameTypeGuitar = (type: string): string => {
   switch (type) {
