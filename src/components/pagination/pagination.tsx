@@ -21,9 +21,15 @@ function Pagination(props: PaginationProps): JSX.Element {
   }
 
   const portionCount = Math.ceil(pageCount / props.portionSize);
-  const [portionNumber, setPortionNumber] = useState<number>(1);
+  const currentPortionNumber = Math.ceil(props.currentPage / props.portionSize);
+  const [portionNumber, setPortionNumber] = useState<number>(currentPortionNumber);
   const leftPortionPageNumber = (portionNumber - 1) * props.portionSize + 1;
   const rightPortionPageNumber = portionNumber * props.portionSize;
+
+  /* eslint-disable no-console */
+  console.log('portionNumber = ', portionNumber, leftPortionPageNumber);
+  console.log(rightPortionPageNumber);
+  /* eslint-enable no-console */
 
   const handleSpanClick = (page: number) => {
     const params = new URLSearchParams(location.search);
@@ -43,7 +49,15 @@ function Pagination(props: PaginationProps): JSX.Element {
         {
           portionNumber > 1 && (
             <li className="pagination__page pagination__page--prev" id="prev">
-              <span className="link pagination__page-link" onClick={ () => setPortionNumber(portionNumber - 1)} >Назад</span>
+              <span
+                className="link pagination__page-link"
+                onClick={ () => {
+                  setPortionNumber(portionNumber - 1);
+                  handleSpanClick((portionNumber - 1) * props.portionSize - 1);
+                }}
+              >
+                Назад
+              </span>
             </li>)
         }
         {
@@ -61,7 +75,15 @@ function Pagination(props: PaginationProps): JSX.Element {
         {
           portionNumber < portionCount && (
             <li className="pagination__page pagination__page--next" id="next">
-              <span className="link pagination__page-link" onClick={ () => setPortionNumber(portionNumber + 1) } >Далее</span>
+              <span
+                className="link pagination__page-link"
+                onClick={ () => {
+                  setPortionNumber(portionNumber + 1);
+                  handleSpanClick(portionNumber * props.portionSize + 1);
+                }}
+              >
+                Далее
+              </span>
             </li>)
         }
       </ul>
