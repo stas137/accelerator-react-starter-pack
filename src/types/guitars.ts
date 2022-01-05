@@ -45,6 +45,7 @@ export type BookProcess = {
   directionsOptions: string[],
   selectedOfferId: number | null,
   listOptions: string[],
+  currentPage: number,
 };
 
 export type GuitarsType = GuitarType[];

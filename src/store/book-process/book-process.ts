@@ -7,6 +7,7 @@ const initialState = {
   directionsOptions: ['По возрастанию', 'По убыванию'],
   selectedOfferId: null,
   listOptions: ['по цене', 'по популярности'],
+  currentPage: 1,
 };
 
 const bookProcess = (state: BookProcess = initialState, action: Actions): BookProcess => {
@@ -15,6 +16,8 @@ const bookProcess = (state: BookProcess = initialState, action: Actions): BookPr
       return {...state, selectedSort: action.payload};
     case ActionType.ChangeSortDirection:
       return {...state, sortDirection: action.payload};
+    case ActionType.ChangeCurrentPage:
+      return {...state, currentPage: action.payload};
     default:
       return state;
   }

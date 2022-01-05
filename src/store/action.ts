@@ -27,6 +27,11 @@ export const changeSortDirection = (sortDirection: string) => ({
   payload: sortDirection,
 } as const);
 
+export const changeCurrentPage = (currentPage: number) => ({
+  type: ActionType.ChangeCurrentPage,
+  payload: currentPage,
+} as const);
+
 export const redirectToRoute = (url: AppRoute) => ({
   type: ActionType.RedirectToRoute,
   payload: url,

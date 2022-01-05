@@ -4,6 +4,7 @@ import {
   loadComments,
   changeSort,
   changeSortDirection,
+  changeCurrentPage,
   redirectToRoute
 } from '../store/action';
 import {ThunkAction, ThunkDispatch} from '@reduxjs/toolkit';
@@ -17,6 +18,7 @@ export enum ActionType {
   ChangeSort = 'main/changeSort',
   ChangeSortDirection = 'main/changeSortDirection',
   RedirectToRoute = 'main/redirectToRoute',
+  ChangeCurrentPage = 'main/currentPage',
 }
 
 export type Actions =
@@ -25,6 +27,7 @@ export type Actions =
   | ReturnType<typeof loadComments>
   | ReturnType<typeof changeSort>
   | ReturnType<typeof changeSortDirection>
+  | ReturnType<typeof changeCurrentPage>
   | ReturnType<typeof redirectToRoute>;
 
 export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;

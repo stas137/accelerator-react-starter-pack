@@ -9,12 +9,12 @@ import {
 } from '../../utils/common';
 import {Dispatch} from '@reduxjs/toolkit';
 import {connect, ConnectedProps} from 'react-redux';
-import {changeSort, changeSortDirection} from '../../store/action';
+import {changeCurrentPage, changeSort, changeSortDirection} from '../../store/action';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import Footer from '../footer/footer';
 import Header from '../header/header';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useHistory, useLocation} from 'react-router-dom';
 import FilterElementString from '../filter-element-string/filter-element-string';
 import Pagination from '../pagination/pagination';
@@ -24,6 +24,7 @@ const mapStateToProps = (state: State) => ({
   selectedSort: state[NameSpace.Book].selectedSort,
   sortDirection: state[NameSpace.Book].sortDirection,
   listOptions: state[NameSpace.Book].listOptions,
+  currentPage: state[NameSpace.Book].currentPage,
 });
 
 const MapDispatchToProps = (dispatch: Dispatch) => ({
@@ -33,17 +34,33 @@ const MapDispatchToProps = (dispatch: Dispatch) => ({
   onChangeSortDirection(sortDirection: string) {
     dispatch(changeSortDirection(sortDirection));
   },
+  onChangeCurrentPage(currentPage: number) {
+    dispatch(changeCurrentPage(currentPage));
+  },
 });
 
 const getQueryString = (typesGuitars: string[], stringCounts: number[]) => {
+  const params = new URLSearchParams();
+
   if (typesGuitars.length || stringCounts.length) {
-    if (typesGuitars.length && stringCounts.length) {
-      return `?type=${typesGuitars.toString()}&stringCounts=${stringCounts.toString()}`;
-    } else if (typesGuitars.length) {
-      return `?type=${typesGuitars.toString()}`;
+
+    if (typesGuitars.length) {
+      params.set('type', typesGuitars.toString());
     } else {
-      return `?stringCounts=${stringCounts.toString()}`;
+      params.delete('type');
     }
+
+    if (stringCounts.length) {
+      params.set('stringCounts', stringCounts.toString());
+    } else {
+      params.delete('stringCounts');
+    }
+
+    /* eslint-disable no-console */
+    console.log(params.toString());
+    /* eslint-enable no-console */
+
+    return `?${params.toString()}`;
   } else {
     return '/';
   }
@@ -52,10 +69,10 @@ const getQueryString = (typesGuitars: string[], stringCounts: number[]) => {
 const connector = connect(mapStateToProps, MapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, onChangeSortDirection}: PropsFromRedux):JSX.Element {
+function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, onChangeSort, onChangeSortDirection, onChangeCurrentPage}: PropsFromRedux):JSX.Element {
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [guitarsPerPage] = useState(9);
+  const [portionSize] = useState<number>(2);
+  const [guitarsPerPage] = useState<number>(6);
 
   const lastGuitarIndex = currentPage * guitarsPerPage;
   const firstGuitarIndex = lastGuitarIndex - guitarsPerPage;
@@ -66,19 +83,37 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
   const history = useHistory();
   const location = useLocation();
 
-  if ((location.search.length) && (typesGuitars.length === 0) && (stringCounts.length === 0)) {
-    const paramsEntries = new URLSearchParams(location.search).entries();
-    const paramSearchObject = Object.fromEntries(paramsEntries);
+  useEffect(() => {
+    if (location.search.length) {
+      const paramsEntries = new URLSearchParams(location.search).entries();
+      const paramSearchObject = Object.fromEntries(paramsEntries);
 
-    if (paramSearchObject.type) {
-      setTypesGuitars(paramSearchObject.type.split(','));
-    }
+      /* eslint-disable no-console */
+      console.log(paramSearchObject);
+      /* eslint-enable no-console */
 
-    if (paramSearchObject.stringCounts) {
-      const paramSearchObjectNumber = paramSearchObject.stringCounts.split(',').map((item) => Number(item));
-      setStringCounts(paramSearchObjectNumber);
+      if (paramSearchObject.type) {
+        setTypesGuitars(paramSearchObject.type.split(','));
+      }
+
+      if (paramSearchObject.stringCounts) {
+        const paramSearchObjectNumber = paramSearchObject.stringCounts.split(',').map((item) => Number(item));
+        setStringCounts(paramSearchObjectNumber);
+      } else {
+        setStringCounts([]);
+      }
+
+
+      if (paramSearchObject.page) {
+        onChangeCurrentPage(Number(paramSearchObject.page));
+      } else {
+        onChangeCurrentPage(1);
+      }
+    } else {
+      onChangeCurrentPage(1);
     }
-  }
+  }, [location.search]);
+
 
   const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
   const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
@@ -110,13 +145,13 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
     if (!setOfTypesGuitars.has(typeGuitar)) {
       setTypesGuitars([...typesGuitars, typeGuitar]);
 
-      const queryString = getQueryString([...typesGuitars, typeGuitar], stringCounts);
+      const queryString = getQueryString([...typesGuitars, typeGuitar], []);
       history.push(queryString);
     } else {
       const newTypesGuitars = typesGuitars.filter((item) => item !== typeGuitar);
       setTypesGuitars([...newTypesGuitars]);
 
-      const queryString = getQueryString([...newTypesGuitars], stringCounts);
+      const queryString = getQueryString([...newTypesGuitars], []);
       history.push(queryString);
     }
   };
@@ -138,13 +173,9 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
     }
   };
 
-  const changePage = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const nextPage = () => {
+  /*const nextPage = () => {
     setCurrentPage(currentPage + 1);
-  };
+  };*/
 
   return (
     <div className="wrapper">
@@ -275,9 +306,8 @@ function Main({guitars, selectedSort, sortDirection, listOptions, onChangeSort, 
             <Pagination
               currentPage={currentPage}
               guitarsPerPage={guitarsPerPage}
-              guitarsTotalCount={guitars.length}
-              changePage={changePage}
-              nextPage={nextPage}
+              guitarsTotalCount={sortedGuitars.length}
+              portionSize={portionSize}
             />
           </div>
         </div>
