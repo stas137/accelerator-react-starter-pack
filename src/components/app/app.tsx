@@ -3,8 +3,26 @@ import {Route, Switch} from 'react-router-dom';
 import {AppRoute} from '../../utils/const';
 import Product from '../product/product';
 import NotFound from '../not-found/not-found';
+import {State} from '../../types/state';
+import {NameSpace} from '../../store/root-reducer';
+import {connect, ConnectedProps} from 'react-redux';
+import Loading from '../loading/loading';
 
-function App(): JSX.Element {
+const mapStateToProps = (state: State) => ({
+  isDataLoaded: state[NameSpace.Data].isDataLoaded,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function App({isDataLoaded}: PropsFromRedux): JSX.Element {
+
+  if (!isDataLoaded) {
+    return (
+      <Loading />
+    );
+  }
+
   return (
     <Switch>
       <Route exact path={AppRoute.Main}>
@@ -20,4 +38,5 @@ function App(): JSX.Element {
   );
 }
 
-export default App;
+export {App};
+export default connector(App);

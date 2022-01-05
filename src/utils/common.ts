@@ -83,3 +83,16 @@ export const getStringCountsForTypes = (guitars: GuitarsType, typesGuitars: stri
   }
   return [];
 };
+
+export const getPriceMinGuitars = (guitars: GuitarsType): number => {
+  const priceList: number[] = guitars.map((guitar) => guitar.price);
+  return Math.min(...priceList);
+};
+
+export const getPriceMaxGuitars = (guitars: GuitarsType): number => {
+  const priceList: number[] = guitars.map((guitar) => guitar.price);
+  return Math.max(...priceList);
+};
+
+export const filterGuitarsPrice = (priceMinFilter: number, priceMaxFilter: number, guitars: GuitarsType): GuitarsType =>
+  guitars.filter((guitar) => (guitar.price >= priceMinFilter) && (guitar.price <= priceMaxFilter));

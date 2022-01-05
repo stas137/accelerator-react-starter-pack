@@ -1,7 +1,8 @@
 import CatalogCards from '../catalog-cards/catalog-cards';
 import {
+  filterGuitarsPrice,
   filterGuitarsStringCounts, filterGuitarsType,
-  getNameTypeGuitar,
+  getNameTypeGuitar, getPriceMaxGuitars, getPriceMinGuitars,
   getStringCounts,
   getStringCountsForTypes,
   getTypesGuitars,
@@ -14,7 +15,7 @@ import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import Footer from '../footer/footer';
 import Header from '../header/header';
-import {useEffect, useState} from 'react';
+import {ChangeEvent, useEffect, useState} from 'react';
 import {useHistory, useLocation} from 'react-router-dom';
 import FilterElementString from '../filter-element-string/filter-element-string';
 import Pagination from '../pagination/pagination';
@@ -27,7 +28,7 @@ const mapStateToProps = (state: State) => ({
   currentPage: state[NameSpace.Book].currentPage,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   onChangeSort(selectedSort: string) {
     dispatch(changeSort(selectedSort));
   },
@@ -56,17 +57,13 @@ const getQueryString = (typesGuitars: string[], stringCounts: number[]) => {
       params.delete('stringCounts');
     }
 
-    /* eslint-disable no-console */
-    console.log(params.toString());
-    /* eslint-enable no-console */
-
     return `?${params.toString()}`;
   } else {
     return '/';
   }
 };
 
-const connector = connect(mapStateToProps, MapDispatchToProps);
+const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, onChangeSort, onChangeSortDirection, onChangeCurrentPage}: PropsFromRedux):JSX.Element {
@@ -88,10 +85,6 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
       const paramsEntries = new URLSearchParams(location.search).entries();
       const paramSearchObject = Object.fromEntries(paramsEntries);
 
-      /* eslint-disable no-console */
-      console.log(paramSearchObject);
-      /* eslint-enable no-console */
-
       if (paramSearchObject.type) {
         setTypesGuitars(paramSearchObject.type.split(','));
       }
@@ -102,7 +95,6 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
       } else {
         setStringCounts([]);
       }
-
 
       if (paramSearchObject.page) {
         onChangeCurrentPage(Number(paramSearchObject.page));
@@ -119,8 +111,19 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
   const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
   const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
 
+
+  const priceMinGuitars = getPriceMinGuitars(sortedGuitars);
+  const [priceMin] = useState<number>(priceMinGuitars);
+  const [priceMinFilter, setPriceMinFilter] = useState<number>(priceMin);
+
+  const priceMaxGuitars = getPriceMaxGuitars(sortedGuitars);
+  const [priceMax] = useState<number>(priceMaxGuitars);
+  const [priceMaxFilter, setPriceMaxFilter] = useState<number>(priceMax);
+
+  const filteredGuitarsByPrice = filterGuitarsPrice(priceMinFilter, priceMaxFilter, sortedGuitars);
+
   //для вывода нужных гитар на странице
-  const guitarsPage = sortedGuitars.slice(firstGuitarIndex, lastGuitarIndex);
+  const guitarsPage = filteredGuitarsByPrice.slice(firstGuitarIndex, lastGuitarIndex);
 
   const stringCountsData = getStringCounts(guitars);
   const typesGuitarsData = getTypesGuitars(guitars);
@@ -138,7 +141,31 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
     disabledStringCounts = stringCountsData.filter((item) => !stringCountsForTypes.includes(item));
   }
 
-  const enabledStringCounts: number[] = stringCountsData.filter((item) => !checkedStringCounts.includes(item) && !disabledStringCounts.includes(item));
+  //const enabledStringCounts: number[] = stringCountsData.filter((item) => !checkedStringCounts.includes(item) && !disabledStringCounts.includes(item));
+
+  const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    /* eslint-disable no-console */
+    console.log(e.target.value);
+    /* eslint-enable no-console */
+
+    if (Number(e.target.value) < priceMin) {
+      e.target.value = priceMin.toString();
+    }
+    setPriceMinFilter(Number(e.target.value));
+  };
+
+  const handleBlurInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    /* eslint-disable no-console */
+    console.log(e.target.value);
+    /* eslint-enable no-console */
+
+    if (Number(e.target.value) > priceMax) {
+      e.target.value = priceMax.toString();
+    }
+    setPriceMaxFilter(Number(e.target.value));
+  };
 
   const handleInputTypesGuitarChange = (typeGuitar: string) => {
     const setOfTypesGuitars = new Set(typesGuitars);
@@ -199,11 +226,23 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                 <div className="catalog-filter__price-range">
                   <div className="form-input">
                     <label className="visually-hidden">Минимальная цена</label>
-                    <input type="number" placeholder="1 000" id="priceMin" name="от" />
+                    <input
+                      type="number"
+                      placeholder={priceMin.toString()}
+                      id="priceMin"
+                      name="от"
+                      onBlur={handleBlurInputPriceMin}
+                    />
                   </div>
                   <div className="form-input">
                     <label className="visually-hidden">Максимальная цена</label>
-                    <input type="number" placeholder="30 000" id="priceMax" name="до" />
+                    <input
+                      type="number"
+                      placeholder={priceMax.toString()}
+                      id="priceMax"
+                      name="до"
+                      onBlur={handleBlurInputPriceMax}
+                    />
                   </div>
                 </div>
               </fieldset>
@@ -232,18 +271,8 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                 <legend className="catalog-filter__block-title">Количество струн</legend>
 
                 {
-                  checkedStringCounts.map((item) => (
-                    <FilterElementString key={item} item={item} checked disabled={false} handleInputStringsChange={handleInputStringsChange}/>
-                  ))
-                }
-                {
-                  enabledStringCounts.map((item) => (
-                    <FilterElementString key={item} item={item} checked={false} disabled={false} handleInputStringsChange={handleInputStringsChange} />
-                  ))
-                }
-                {
-                  disabledStringCounts.map((item) => (
-                    <FilterElementString key={item} item={item} checked={false} disabled handleInputStringsChange={handleInputStringsChange} />
+                  stringCountsData.map((item) => (
+                    <FilterElementString key={item} item={item} checked={checkedStringCounts.includes(item)} disabled={disabledStringCounts.includes(item)} handleInputStringsChange={handleInputStringsChange} />
                   ))
                 }
 
@@ -306,7 +335,7 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
             <Pagination
               currentPage={currentPage}
               guitarsPerPage={guitarsPerPage}
-              guitarsTotalCount={sortedGuitars.length}
+              guitarsTotalCount={filteredGuitarsByPrice.length}
               portionSize={portionSize}
             />
           </div>
