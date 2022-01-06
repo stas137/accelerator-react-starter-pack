@@ -23,17 +23,7 @@ export type CommentType = {
 
 export type GuitarsData = {
   guitars: GuitarType[],
-  guitar: {
-    id: number,
-    name: string,
-    vendorCode: string,
-    type: string,
-    description: string,
-    previewImg: string,
-    stringCount: number,
-    rating: number,
-    price: number,
-  },
+  guitar: GuitarType,
   comments: CommentType[],
   stringCounts: number[],
   isDataLoaded: boolean,

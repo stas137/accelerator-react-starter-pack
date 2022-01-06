@@ -84,6 +84,32 @@ export const getStringCountsForTypes = (guitars: GuitarsType, typesGuitars: stri
   return [];
 };
 
+export const getCheckedStringCounts = (stringCountsForTypes: number[], stringCounts: number[]) => {
+  if (stringCountsForTypes.length) {
+    return stringCounts.filter((item) => stringCountsForTypes.includes(item));
+  } else {
+    return [...stringCounts];
+  }
+};
+
+export const getCheckedTypesGuitars = (typeGuitarsForString: string[], typesGuitars: string[]) => {
+  if (typeGuitarsForString.length) {
+    return typesGuitars.filter((item) => typeGuitarsForString.includes(item));
+  } else {
+    return [...typesGuitars];
+  }
+};
+
+export const getTypeGuitarsForString = (guitars: GuitarsType, stringCounts: number[]): string[] => {
+  if (stringCounts.length) {
+    const temp: GuitarsType[] = [];
+    stringCounts.forEach((itemString) => temp.push(guitars.filter((item) => item.stringCount === itemString)));
+    const result = temp.map((item) => item.map((el) => el.type));
+    return Array.from(new Set(result.flat(1)));
+  }
+  return [];
+};
+
 export const getPriceMinGuitars = (guitars: GuitarsType): number => {
   const priceList: number[] = guitars.map((guitar) => guitar.price);
   return Math.min(...priceList);
@@ -96,3 +122,21 @@ export const getPriceMaxGuitars = (guitars: GuitarsType): number => {
 
 export const filterGuitarsPrice = (priceMinFilter: number, priceMaxFilter: number, guitars: GuitarsType): GuitarsType =>
   guitars.filter((guitar) => (guitar.price >= priceMinFilter) && (guitar.price <= priceMaxFilter));
+
+export const getQueryString = (typesGuitars: string[], stringCounts: number[]): string => {
+  const params = new URLSearchParams();
+
+  if (typesGuitars.length) {
+    params.set('type', typesGuitars.toString());
+  } else {
+    params.delete('type');
+  }
+
+  if (stringCounts.length) {
+    params.set('stringCounts', stringCounts.toString());
+  } else {
+    params.delete('stringCounts');
+  }
+
+  return params.toString().length ? `?${params.toString()}` : '/';
+};

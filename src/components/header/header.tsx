@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useRef, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import {connect, ConnectedProps} from 'react-redux';
@@ -25,15 +25,15 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
 
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const [value, setValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   const filterGuitars = (searchString: string) => guitars.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()));
-  const filteredGuitars: GuitarsType = filterGuitars(value);
+  const filteredGuitars: GuitarsType = filterGuitars(searchValue);
 
-  const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
-    e.preventDefault();
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+
     if (searchRef.current !== null) {
-      setValue(searchRef.current.value);
+      setSearchValue(searchRef.current.value);
     }
   };
 
@@ -41,7 +41,7 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
     e.preventDefault();
     if ((searchRef.current !== null) && (searchRef.current?.value !== '')) {
       searchRef.current.value = '';
-      setValue(searchRef.current.value);
+      setSearchValue(searchRef.current.value);
 
       if (filteredGuitars) {
         onClickGuitar(filteredGuitars[0].id);
@@ -53,9 +53,6 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
   };
 
   const handleClickListItem = (guitarId: number) => {
-    /* eslint-disable no-console */
-    console.log(guitarId);
-    /* eslint-enable no-console */
     onClickGuitar(guitarId);
   };
 
@@ -99,7 +96,7 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
           </form>
 
           {
-            value !== ''
+            searchValue !== ''
               ? (
                 <ul className="form-search__select-list">
                   {

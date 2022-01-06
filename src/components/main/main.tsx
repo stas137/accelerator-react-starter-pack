@@ -1,10 +1,10 @@
 import CatalogCards from '../catalog-cards/catalog-cards';
 import {
   filterGuitarsPrice,
-  filterGuitarsStringCounts, filterGuitarsType,
-  getNameTypeGuitar, getPriceMaxGuitars, getPriceMinGuitars,
+  filterGuitarsStringCounts, filterGuitarsType, getCheckedStringCounts, getCheckedTypesGuitars,
+  getNameTypeGuitar, getPriceMaxGuitars, getPriceMinGuitars, getQueryString,
   getStringCounts,
-  getStringCountsForTypes,
+  getStringCountsForTypes, getTypeGuitarsForString,
   getTypesGuitars,
   sortGuitars
 } from '../../utils/common';
@@ -40,28 +40,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 });
 
-const getQueryString = (typesGuitars: string[], stringCounts: number[]) => {
-  const params = new URLSearchParams();
-
-  if (typesGuitars.length || stringCounts.length) {
-
-    if (typesGuitars.length) {
-      params.set('type', typesGuitars.toString());
-    } else {
-      params.delete('type');
-    }
-
-    if (stringCounts.length) {
-      params.set('stringCounts', stringCounts.toString());
-    } else {
-      params.delete('stringCounts');
-    }
-
-    return `?${params.toString()}`;
-  } else {
-    return '/';
-  }
-};
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -81,36 +59,34 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
   const location = useLocation();
 
   useEffect(() => {
-    if (location.search.length) {
-      const paramsEntries = new URLSearchParams(location.search).entries();
-      const paramSearchObject = Object.fromEntries(paramsEntries);
 
-      if (paramSearchObject.type) {
-        setTypesGuitars(paramSearchObject.type.split(','));
-      }
+    const paramsEntries = new URLSearchParams(location.search).entries();
+    const paramSearchObject = Object.fromEntries(paramsEntries);
 
-      if (paramSearchObject.stringCounts) {
-        const paramSearchObjectNumber = paramSearchObject.stringCounts.split(',').map((item) => Number(item));
-        setStringCounts(paramSearchObjectNumber);
-      } else {
-        setStringCounts([]);
-      }
+    if (paramSearchObject.type) {
+      setTypesGuitars(paramSearchObject.type.split(','));
+    } else {
+      setTypesGuitars([]);
+    }
 
-      if (paramSearchObject.page) {
-        onChangeCurrentPage(Number(paramSearchObject.page));
-      } else {
-        onChangeCurrentPage(1);
-      }
+    if (paramSearchObject.stringCounts) {
+      const paramSearchObjectNumber = paramSearchObject.stringCounts.split(',').map((item) => Number(item));
+      setStringCounts(paramSearchObjectNumber);
+    } else {
+      setStringCounts([]);
+    }
+
+    if (paramSearchObject.page) {
+      onChangeCurrentPage(Number(paramSearchObject.page));
     } else {
       onChangeCurrentPage(1);
     }
-  }, [location.search]);
 
+  }, [location.search]);
 
   const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
   const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
   const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
-
 
   const priceMinGuitars = getPriceMinGuitars(sortedGuitars);
   const [priceMin] = useState<number>(priceMinGuitars);
@@ -128,27 +104,23 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
   const stringCountsData = getStringCounts(guitars);
   const typesGuitarsData = getTypesGuitars(guitars);
   const stringCountsForTypes = getStringCountsForTypes(guitars, typesGuitars);
+  const typeGuitarsForString = getTypeGuitarsForString(guitars, stringCounts);
 
-  let checkedStringCounts: number[] = [];
-  if (stringCountsForTypes.length) {
-    checkedStringCounts = stringCounts.filter((item) => stringCountsForTypes.includes(item));
-  } else {
-    checkedStringCounts = [...stringCounts];
+  let disabledTypesGuitars: string[] = [];
+  if (typeGuitarsForString.length) {
+    disabledTypesGuitars = typesGuitarsData.filter((item) => !typeGuitarsForString.includes(item));
   }
+
+  const checkedStringCounts: number[] = getCheckedStringCounts(stringCountsForTypes, stringCounts);
+  const checkedTypesGuitars: string[] = getCheckedTypesGuitars(typeGuitarsForString, typesGuitars);
 
   let disabledStringCounts: number[] = [];
   if (stringCountsForTypes.length) {
     disabledStringCounts = stringCountsData.filter((item) => !stringCountsForTypes.includes(item));
   }
 
-  //const enabledStringCounts: number[] = stringCountsData.filter((item) => !checkedStringCounts.includes(item) && !disabledStringCounts.includes(item));
 
   const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    /* eslint-disable no-console */
-    console.log(e.target.value);
-    /* eslint-enable no-console */
-
     if (Number(e.target.value) < priceMin) {
       e.target.value = priceMin.toString();
     }
@@ -156,36 +128,31 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
   };
 
   const handleBlurInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    /* eslint-disable no-console */
-    console.log(e.target.value);
-    /* eslint-enable no-console */
-
-    if (Number(e.target.value) > priceMax) {
+    if (Number(e.target.value) > priceMax || !e.target.value.length) {
       e.target.value = priceMax.toString();
     }
     setPriceMaxFilter(Number(e.target.value));
   };
 
   const handleInputTypesGuitarChange = (typeGuitar: string) => {
-    const setOfTypesGuitars = new Set(typesGuitars);
-    if (!setOfTypesGuitars.has(typeGuitar)) {
+
+    if (!typesGuitars.includes(typeGuitar)) {
       setTypesGuitars([...typesGuitars, typeGuitar]);
 
-      const queryString = getQueryString([...typesGuitars, typeGuitar], []);
+      const queryString = getQueryString([...typesGuitars, typeGuitar], stringCounts);
       history.push(queryString);
     } else {
       const newTypesGuitars = typesGuitars.filter((item) => item !== typeGuitar);
       setTypesGuitars([...newTypesGuitars]);
 
-      const queryString = getQueryString([...newTypesGuitars], []);
+      const queryString = getQueryString([...newTypesGuitars], stringCounts);
       history.push(queryString);
     }
   };
 
   const handleInputStringsChange = (stringCount: number) => {
-    const setOfStringCounts = new Set(stringCounts);
-    if (!setOfStringCounts.has(stringCount)) {
+
+    if (!stringCounts.includes(stringCount)) {
       setStringCounts([...stringCounts, stringCount]);
 
       const queryString = getQueryString(typesGuitars, [...stringCounts, stringCount]);
@@ -199,10 +166,6 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
       history.push(queryString);
     }
   };
-
-  /*const nextPage = () => {
-    setCurrentPage(currentPage + 1);
-  };*/
 
   return (
     <div className="wrapper">
@@ -248,24 +211,18 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
               </fieldset>
               <fieldset className="catalog-filter__block">
                 <legend className="catalog-filter__block-title">Тип гитар</legend>
-
                 {
-                  typesGuitarsData.map((item) => ( new Set(typesGuitars).has(item)
-                    ? (
-                      <div className="form-checkbox catalog-filter__block-item" key={item}>
-                        <input className="visually-hidden" type="checkbox" id={item} name={item} checked onChange={() => handleInputTypesGuitarChange(item)}/>
-                        <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
-                      </div>
-                    )
-                    : (
-                      <div className="form-checkbox catalog-filter__block-item" key={item}>
-                        <input className="visually-hidden" type="checkbox" id={item} name={item} checked={false} onChange={() => handleInputTypesGuitarChange(item)}/>
-                        <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
-                      </div>
-                    )
+                  typesGuitarsData.map((item) => (
+                    <div className="form-checkbox catalog-filter__block-item" key={item}>
+                      <input className="visually-hidden" type="checkbox" id={item} name={item}
+                        checked={checkedTypesGuitars.includes(item)}
+                        disabled={disabledTypesGuitars.includes(item)}
+                        onChange={() => handleInputTypesGuitarChange(item)}
+                      />
+                      <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
+                    </div>
                   ))
                 }
-
               </fieldset>
               <fieldset className="catalog-filter__block">
                 <legend className="catalog-filter__block-title">Количество струн</legend>
