@@ -1,10 +1,18 @@
 import CatalogCards from '../catalog-cards/catalog-cards';
 import {
   filterGuitarsPrice,
-  filterGuitarsStringCounts, filterGuitarsType, getCheckedStringCounts, getCheckedTypesGuitars,
-  getNameTypeGuitar, getPriceMaxGuitars, getPriceMinGuitars, getQueryString,
+  filterGuitarsStringCounts,
+  filterGuitarsType,
+  getCheckedStringCounts,
+  getCheckedTypesGuitars, getDisabledStringCounts, getDisabledTypesGuitars,
+  getNameSort,
+  getNameTypeGuitar,
+  getPriceMaxGuitars,
+  getPriceMinGuitars,
+  getQueryString,
   getStringCounts,
-  getStringCountsForTypes, getTypeGuitarsForString,
+  getStringCountsForTypes,
+  getTypeGuitarsForString,
   getTypesGuitars,
   sortGuitars
 } from '../../utils/common';
@@ -40,11 +48,20 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 });
 
-
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, onChangeSort, onChangeSortDirection, onChangeCurrentPage}: PropsFromRedux):JSX.Element {
+function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFromRedux):JSX.Element {
+
+  const history = useHistory();
+  const location = useLocation();
+
+  const historyPush = (queryString: string): void => {
+    history.push({
+      pathname: '/',
+      search: queryString,
+    });
+  };
 
   const [portionSize] = useState<number>(2);
   const [guitarsPerPage] = useState<number>(6);
@@ -54,9 +71,20 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
 
   const [stringCounts, setStringCounts] = useState<number []>([]);
   const [typesGuitars, setTypesGuitars] = useState<string []>([]);
+  const [selectedSort, setSelectedSort] = useState<string>('');
+  const [sortDirection, setSortDirection] = useState<string>('asc');
 
-  const history = useHistory();
-  const location = useLocation();
+  const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
+  const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
+  const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
+
+  const priceMinGuitars = getPriceMinGuitars(sortedGuitars);
+  const [priceMin] = useState<number>(priceMinGuitars);
+  const [priceMinFilter, setPriceMinFilter] = useState<number>(priceMin);
+
+  const priceMaxGuitars = getPriceMaxGuitars(sortedGuitars);
+  const [priceMax] = useState<number>(priceMaxGuitars);
+  const [priceMaxFilter, setPriceMaxFilter] = useState<number>(priceMax);
 
   useEffect(() => {
 
@@ -82,19 +110,36 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
       onChangeCurrentPage(1);
     }
 
+    if (paramSearchObject._sort) {
+      setSelectedSort(paramSearchObject._sort);
+    } else {
+      setSelectedSort('');
+    }
+
+    if (paramSearchObject._order) {
+      setSortDirection(paramSearchObject._order);
+    } else {
+      setSortDirection('asc');
+    }
+
+    if (paramSearchObject.price_gte && paramSearchObject.price_lte && (Number(paramSearchObject.price_gte) < Number(paramSearchObject.price_lte))) {
+      if (Number(paramSearchObject.price_lte) > priceMax || Number(paramSearchObject.price_lte) < 0 || Number(paramSearchObject.price_lte) < priceMinFilter) {
+        setPriceMaxFilter(priceMax);
+      } else {
+        setPriceMaxFilter(Number(paramSearchObject.price_lte));
+      }
+
+      if (Number(paramSearchObject.price_gte) < priceMin || Number(paramSearchObject.price_gte) > priceMax) {
+        setPriceMinFilter(priceMin);
+      } else {
+        setPriceMinFilter(Number(paramSearchObject.price_gte));
+      }
+    } else {
+      setPriceMinFilter(priceMin);
+      setPriceMaxFilter(priceMax);
+    }
+
   }, [location.search]);
-
-  const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
-  const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
-  const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
-
-  const priceMinGuitars = getPriceMinGuitars(sortedGuitars);
-  const [priceMin] = useState<number>(priceMinGuitars);
-  const [priceMinFilter, setPriceMinFilter] = useState<number>(priceMin);
-
-  const priceMaxGuitars = getPriceMaxGuitars(sortedGuitars);
-  const [priceMax] = useState<number>(priceMaxGuitars);
-  const [priceMaxFilter, setPriceMaxFilter] = useState<number>(priceMax);
 
   const filteredGuitarsByPrice = filterGuitarsPrice(priceMinFilter, priceMaxFilter, sortedGuitars);
 
@@ -106,65 +151,74 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
   const stringCountsForTypes = getStringCountsForTypes(guitars, typesGuitars);
   const typeGuitarsForString = getTypeGuitarsForString(guitars, stringCounts);
 
-  let disabledTypesGuitars: string[] = [];
-  if (typeGuitarsForString.length) {
-    disabledTypesGuitars = typesGuitarsData.filter((item) => !typeGuitarsForString.includes(item));
-  }
+  const disabledStringCounts: number[] = getDisabledStringCounts(stringCountsForTypes, stringCountsData);
+  const disabledTypesGuitars: string[] = getDisabledTypesGuitars(typeGuitarsForString, typesGuitarsData);
 
   const checkedStringCounts: number[] = getCheckedStringCounts(stringCountsForTypes, stringCounts);
   const checkedTypesGuitars: string[] = getCheckedTypesGuitars(typeGuitarsForString, typesGuitars);
 
-  let disabledStringCounts: number[] = [];
-  if (stringCountsForTypes.length) {
-    disabledStringCounts = stringCountsData.filter((item) => !stringCountsForTypes.includes(item));
-  }
-
-
-  const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) < priceMin) {
-      e.target.value = priceMin.toString();
-    }
+  const handleChangeMinPrice = (e: ChangeEvent<HTMLInputElement>) => {
     setPriceMinFilter(Number(e.target.value));
   };
 
+  const handleChangeMaxPrice = (e: ChangeEvent<HTMLInputElement>) => {
+    setPriceMaxFilter(Number(e.target.value));
+  };
+
+  const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
+    if (Number(e.target.value) < priceMin || Number(e.target.value) > priceMax) {
+      e.target.value = priceMin.toString();
+    }
+    setPriceMinFilter(Number(e.target.value));
+    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, sortDirection, Number(e.target.value), priceMaxFilter);
+    historyPush(queryString);
+
+  };
+
   const handleBlurInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) > priceMax || !e.target.value.length) {
+    if (Number(e.target.value) > priceMax || !e.target.value.length || Number(e.target.value) < 0 || Number(e.target.value) < priceMinFilter) {
       e.target.value = priceMax.toString();
     }
     setPriceMaxFilter(Number(e.target.value));
+    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, sortDirection, priceMinFilter, Number(e.target.value));
+    historyPush(queryString);
+
   };
 
   const handleInputTypesGuitarChange = (typeGuitar: string) => {
 
     if (!typesGuitars.includes(typeGuitar)) {
-      setTypesGuitars([...typesGuitars, typeGuitar]);
-
-      const queryString = getQueryString([...typesGuitars, typeGuitar], stringCounts);
-      history.push(queryString);
+      const queryString = getQueryString([...typesGuitars, typeGuitar], stringCounts, selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
+      historyPush(queryString);
     } else {
       const newTypesGuitars = typesGuitars.filter((item) => item !== typeGuitar);
-      setTypesGuitars([...newTypesGuitars]);
-
-      const queryString = getQueryString([...newTypesGuitars], stringCounts);
-      history.push(queryString);
+      const queryString = getQueryString([...newTypesGuitars], stringCounts, selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
+      historyPush(queryString);
     }
   };
 
   const handleInputStringsChange = (stringCount: number) => {
 
     if (!stringCounts.includes(stringCount)) {
-      setStringCounts([...stringCounts, stringCount]);
-
-      const queryString = getQueryString(typesGuitars, [...stringCounts, stringCount]);
-      history.push(queryString);
-
+      //setStringCounts([...stringCounts, stringCount]);
+      const queryString = getQueryString(typesGuitars, [...stringCounts, stringCount], selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
+      historyPush(queryString);
     } else {
       const newStringCounts = stringCounts.filter((item) => item !== stringCount);
-      setStringCounts([...newStringCounts]);
-
-      const queryString = getQueryString(typesGuitars, [...newStringCounts]);
-      history.push(queryString);
+      //setStringCounts([...newStringCounts]);
+      const queryString = getQueryString(typesGuitars, [...newStringCounts], selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
+      historyPush(queryString);
     }
+  };
+
+  const handleChangeSort = (newSelectedSort: string) => {
+    const queryString = getQueryString(typesGuitars, stringCounts, newSelectedSort, sortDirection, priceMinFilter, priceMaxFilter);
+    historyPush(queryString);
+  };
+
+  const handleChangeSortDirection = (newSortDirection: string) => {
+    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, newSortDirection, priceMinFilter, priceMaxFilter);
+    historyPush(queryString);
   };
 
   return (
@@ -191,9 +245,10 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                     <label className="visually-hidden">Минимальная цена</label>
                     <input
                       type="number"
-                      placeholder={priceMin.toString()}
+                      value={priceMinFilter}
                       id="priceMin"
                       name="от"
+                      onChange={handleChangeMinPrice}
                       onBlur={handleBlurInputPriceMin}
                     />
                   </div>
@@ -201,9 +256,10 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                     <label className="visually-hidden">Максимальная цена</label>
                     <input
                       type="number"
-                      placeholder={priceMax.toString()}
+                      value={priceMaxFilter}
                       id="priceMax"
                       name="до"
+                      onChange={handleChangeMaxPrice}
                       onBlur={handleBlurInputPriceMax}
                     />
                   </div>
@@ -247,7 +303,7 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                         tabIndex={-1}
                         key={item}
                       >
-                        {item}
+                        {getNameSort(item)}
                       </button>
                     )
                     : (
@@ -255,9 +311,9 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
                         className="catalog-sort__type-button"
                         aria-label={item}
                         key={item}
-                        onClick={() => onChangeSort(item)}
+                        onClick={() => handleChangeSort(item)}
                       >
-                        {item}
+                        {getNameSort(item)}
                       </button>
                     ),
                   )
@@ -266,20 +322,20 @@ function Main({guitars, selectedSort, sortDirection, listOptions, currentPage, o
               </div>
               <div className="catalog-sort__order">
                 {
-                  sortDirection === 'По возрастанию'
+                  sortDirection === 'asc'
                     ? (
                       <>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--up catalog-sort__order-button--active" aria-label="По возрастанию" tabIndex={-1}  onClick={() => onChangeSortDirection('По возрастанию')}>
+                        <button className="catalog-sort__order-button catalog-sort__order-button--up catalog-sort__order-button--active" aria-label="По возрастанию" tabIndex={-1} >
                         </button>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--down" aria-label="По убыванию" onClick={() => onChangeSortDirection('По убыванию')}>
+                        <button className="catalog-sort__order-button catalog-sort__order-button--down" aria-label="По убыванию" onClick={() => handleChangeSortDirection('desc')} >
                         </button>
                       </>
                     )
                     : (
                       <>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--up" aria-label="По возрастанию" tabIndex={-1}  onClick={() => onChangeSortDirection('По возрастанию')}>
+                        <button className="catalog-sort__order-button catalog-sort__order-button--up" aria-label="По возрастанию" tabIndex={-1}  onClick={() => handleChangeSortDirection('asc')}>
                         </button>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--down catalog-sort__order-button--active" aria-label="По убыванию" onClick={() => onChangeSortDirection('По убыванию')}>
+                        <button className="catalog-sort__order-button catalog-sort__order-button--down catalog-sort__order-button--active" aria-label="По убыванию" >
                         </button>
                       </>
                     )

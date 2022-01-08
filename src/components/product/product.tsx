@@ -55,7 +55,7 @@ function Product({guitar, comments}: PropsFromRedux):JSX.Element {
                     ))
                 }
 
-                <span className="rate__count"></span>
+                <span className="rate__count">{comments.length}</span>
                 <span className="rate__message"></span>
               </div>
               <div className="tabs">

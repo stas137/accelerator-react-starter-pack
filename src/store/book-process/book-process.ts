@@ -2,11 +2,11 @@ import {Actions, ActionType} from '../../types/action';
 import {BookProcess} from '../../types/guitars';
 
 const initialState = {
-  selectedSort: 'по умолчанию',
+  selectedSort: '',
   sortDirection: 'По возрастанию',
   directionsOptions: ['По возрастанию', 'По убыванию'],
   selectedOfferId: null,
-  listOptions: ['по цене', 'по популярности'],
+  listOptions: ['price', 'rating'],
   currentPage: 1,
 };
 

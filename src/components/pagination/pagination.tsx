@@ -26,11 +26,6 @@ function Pagination(props: PaginationProps): JSX.Element {
   const leftPortionPageNumber = (portionNumber - 1) * props.portionSize + 1;
   const rightPortionPageNumber = portionNumber * props.portionSize;
 
-  /* eslint-disable no-console */
-  console.log('portionNumber = ', portionNumber, leftPortionPageNumber);
-  console.log(rightPortionPageNumber);
-  /* eslint-enable no-console */
-
   const handleSpanClick = (page: number) => {
     const params = new URLSearchParams(location.search);
 
@@ -40,7 +35,10 @@ function Pagination(props: PaginationProps): JSX.Element {
       params.delete('page');
     }
 
-    history.push(`?${params}`);
+    history.push({
+      pathname: '/',
+      search: params.toString(),
+    });
   };
 
   return (

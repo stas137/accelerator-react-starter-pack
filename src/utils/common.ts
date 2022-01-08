@@ -14,12 +14,12 @@ const compareStringLowToHigh = (a:string, b:string):number => (a > b ? 1 : -1);
 
 export const sortGuitars = (selectedSort: string, sortDirection: string, guitars: GuitarsType): GuitarsType => {
   if (guitars) {
-    if (sortDirection === 'По возрастанию') {
+    if (sortDirection === 'asc') {
       switch (selectedSort) {
-        case 'по цене':
+        case 'price':
           return [...guitars].sort(comparePriceLowToHigh);
           break;
-        case 'по популярности':
+        case 'rating':
           return [...guitars].sort(compareRatingLowToHigh);
           break;
         default:
@@ -28,10 +28,10 @@ export const sortGuitars = (selectedSort: string, sortDirection: string, guitars
       }
     } else {
       switch (selectedSort) {
-        case 'по цене':
+        case 'price':
           return [...guitars].sort(comparePriceHighToLow);
           break;
-        case 'по популярности':
+        case 'rating':
           return [...guitars].sort(compareRatingHighToLow);
           break;
         default:
@@ -50,8 +50,8 @@ export const getStringCounts = (guitars: GuitarsType): number[] => {
 };
 
 export const getTypesGuitars = (guitars: GuitarsType): string[] => {
-  const stringCountsAll = guitars.map((item) => item.type);
-  return Array.from(new Set([...stringCountsAll].sort(compareStringLowToHigh)));
+  const typesGuitarsAll = guitars.map((item) => item.type);
+  return Array.from(new Set([...typesGuitarsAll].sort(compareStringLowToHigh)));
 };
 
 export const filterGuitarsType = (guitars: GuitarsType, typesGuitars: string[]): GuitarsType => typesGuitars.length ? guitars.filter((item) => new Set(typesGuitars).has(item.type)) : guitars;
@@ -73,6 +73,34 @@ export const getNameTypeGuitar = (type: string): string => {
       break;
   }
 };
+
+export const getNameSort = (type: string): string => {
+  switch (type) {
+    case 'price':
+      return 'по цене';
+      break;
+    case 'rating':
+      return 'по популярности';
+      break;
+    default:
+      return '';
+      break;
+  }
+};
+
+/*export const getNameRating = (type: string): string => {
+  switch (type) {
+    case 'asc':
+      return 'По возрастанию';
+      break;
+    case 'desc':
+      return 'По убыванию';
+      break;
+    default:
+      return '';
+      break;
+  }
+};*/
 
 export const getStringCountsForTypes = (guitars: GuitarsType, typesGuitars: string[]): number[] => {
   if (typesGuitars.length) {
@@ -100,6 +128,23 @@ export const getCheckedTypesGuitars = (typeGuitarsForString: string[], typesGuit
   }
 };
 
+export const getDisabledStringCounts = (stringCountsForTypes: number[], stringCountsData: number[]) => {
+  if (stringCountsForTypes.length) {
+    return stringCountsData.filter((item) => !stringCountsForTypes.includes(item));
+  } else {
+    return [];
+  }
+};
+
+export const getDisabledTypesGuitars = (typeGuitarsForString: string[], typesGuitarsData: string[]) => {
+  if (typeGuitarsForString.length) {
+    return typesGuitarsData.filter((item) => !typeGuitarsForString.includes(item));
+  } else {
+    return [];
+  }
+};
+
+
 export const getTypeGuitarsForString = (guitars: GuitarsType, stringCounts: number[]): string[] => {
   if (stringCounts.length) {
     const temp: GuitarsType[] = [];
@@ -123,7 +168,7 @@ export const getPriceMaxGuitars = (guitars: GuitarsType): number => {
 export const filterGuitarsPrice = (priceMinFilter: number, priceMaxFilter: number, guitars: GuitarsType): GuitarsType =>
   guitars.filter((guitar) => (guitar.price >= priceMinFilter) && (guitar.price <= priceMaxFilter));
 
-export const getQueryString = (typesGuitars: string[], stringCounts: number[]): string => {
+export const getQueryString = (typesGuitars: string[], stringCounts: number[], selectedSort: string, sortDirection:string, priceMinFilter: number, priceMaxFilter: number): string => {
   const params = new URLSearchParams();
 
   if (typesGuitars.length) {
@@ -138,5 +183,25 @@ export const getQueryString = (typesGuitars: string[], stringCounts: number[]): 
     params.delete('stringCounts');
   }
 
-  return params.toString().length ? `?${params.toString()}` : '/';
+  if (selectedSort.length) {
+    params.set('_sort', selectedSort);
+  } else {
+    params.delete('_sort');
+  }
+
+  if (sortDirection.length) {
+    params.set('_order', sortDirection);
+  } else {
+    params.delete('_order');
+  }
+
+  if (priceMinFilter && priceMaxFilter) {
+    params.set('price_gte', priceMinFilter.toString());
+    params.set('price_lte', priceMaxFilter.toString());
+  } else {
+    params.delete('price_gte');
+    params.delete('price_lte');
+  }
+
+  return params.toString().length ? `${params.toString()}` : '';
 };
