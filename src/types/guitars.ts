@@ -25,8 +25,9 @@ export type GuitarsData = {
   guitars: GuitarType[],
   guitar: GuitarType,
   comments: CommentType[],
-  stringCounts: number[],
-  isDataLoaded: boolean,
+  loading: boolean,
+  total: number,
+  error: boolean,
 };
 
 export type BookProcess = {

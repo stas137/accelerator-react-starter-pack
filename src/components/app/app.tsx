@@ -6,22 +6,15 @@ import NotFound from '../not-found/not-found';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import {connect, ConnectedProps} from 'react-redux';
-import Loading from '../loading/loading';
 
 const mapStateToProps = (state: State) => ({
-  isDataLoaded: state[NameSpace.Data].isDataLoaded,
+  loading: state[NameSpace.Data].loading,
 });
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function App({isDataLoaded}: PropsFromRedux): JSX.Element {
-
-  if (!isDataLoaded) {
-    return (
-      <Loading />
-    );
-  }
+function App({loading}: PropsFromRedux): JSX.Element {
 
   return (
     <Switch>

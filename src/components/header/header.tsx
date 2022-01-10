@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useRef, useState} from 'react';
+import React, {ChangeEvent, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import {connect, ConnectedProps} from 'react-redux';
@@ -37,7 +37,7 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
     }
   };
 
-  const onSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+  const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if ((searchRef.current !== null) && (searchRef.current?.value !== '')) {
       searchRef.current.value = '';

@@ -1,57 +1,35 @@
-import {useHistory, useLocation} from 'react-router-dom';
-import {useState} from 'react';
-
 type PaginationProps = {
-  currentPage: number,
-  guitarsPerPage: number,
-  guitarsTotalCount: number,
-  portionSize: number,
+  page: number,
+  perPage: number,
+  totalCount: number,
+  onChange: (page: number) => void,
 }
 
-function Pagination(props: PaginationProps): JSX.Element {
+function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX.Element {
 
-  const location = useLocation();
-  const history = useHistory();
-
-  const pageNumber = [];
+  /* const pageNumber = [];
   const pageCount = Math.ceil(props.guitarsTotalCount / props.guitarsPerPage);
-
-  for (let i = 1; i <= pageCount; i++) {
-    pageNumber.push(i);
-  }
 
   const portionCount = Math.ceil(pageCount / props.portionSize);
   const currentPortionNumber = Math.ceil(props.currentPage / props.portionSize);
   const [portionNumber, setPortionNumber] = useState<number>(currentPortionNumber);
   const leftPortionPageNumber = (portionNumber - 1) * props.portionSize + 1;
-  const rightPortionPageNumber = portionNumber * props.portionSize;
+  const rightPortionPageNumber = portionNumber * props.portionSize;*/
 
-  const handleSpanClick = (page: number) => {
-    const params = new URLSearchParams(location.search);
-
-    if (page !== 1) {
-      params.set('page', page.toString());
-    } else {
-      params.delete('page');
-    }
-
-    history.push({
-      pathname: '/',
-      search: params.toString(),
-    });
+  const handleSpanClick = (pageNumber: number) => {
+    onChange(pageNumber);
   };
 
   return (
     <div className="pagination page-content__pagination">
       <ul className="pagination__list">
         {
-          portionNumber > 1 && (
+          page > 1 && (
             <li className="pagination__page pagination__page--prev" id="prev">
               <span
                 className="link pagination__page-link"
                 onClick={ () => {
-                  setPortionNumber(portionNumber - 1);
-                  handleSpanClick((portionNumber - 1) * props.portionSize - 1);
+                  handleSpanClick(page - 1);
                 }}
               >
                 Назад
@@ -59,7 +37,7 @@ function Pagination(props: PaginationProps): JSX.Element {
             </li>)
         }
         {
-          pageNumber.filter((page) => (page >= leftPortionPageNumber) && (page <= rightPortionPageNumber)).map((page) => ( props.currentPage === page
+          /*pageNumber.filter((page) => (page >= leftPortionPageNumber) && (page <= rightPortionPageNumber)).map((page) => ( props.currentPage === page
             ?
             <li className="pagination__page pagination__page--active" key={page}>
               <span className="link pagination__page-link" >{page}</span>
@@ -68,16 +46,15 @@ function Pagination(props: PaginationProps): JSX.Element {
             <li className="pagination__page" key={page}>
               <span className="link pagination__page-link" onClick={() => handleSpanClick(page)} >{page}</span>
             </li>
-          ))
+          ))*/
         }
         {
-          portionNumber < portionCount && (
+          page < totalCount / perPage && (
             <li className="pagination__page pagination__page--next" id="next">
               <span
                 className="link pagination__page-link"
                 onClick={ () => {
-                  setPortionNumber(portionNumber + 1);
-                  handleSpanClick(portionNumber * props.portionSize + 1);
+                  handleSpanClick(page + 1);
                 }}
               >
                 Далее

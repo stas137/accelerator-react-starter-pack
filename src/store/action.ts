@@ -2,9 +2,17 @@ import {CommentsType, GuitarsType, GuitarType} from '../types/guitars';
 import {ActionType} from '../types/action';
 import {AppRoute} from '../utils/const';
 
-export const loadGuitars = (guitars: GuitarsType) => ({
+export const loadGuitars = () => ({
   type: ActionType.LoadGuitars,
-  payload: guitars,
+} as const);
+
+export const loadGuitarsSuccess = (guitars: GuitarsType, total: number) => ({
+  type: ActionType.LoadGuitarsSuccess,
+  payload: { guitars, total },
+} as const);
+
+export const loadGuitarsError = () => ({
+  type: ActionType.LoadGuitarsError,
 } as const);
 
 export const loadGuitar = (guitar: GuitarType) => ({

@@ -3,8 +3,8 @@ import {BookProcess} from '../../types/guitars';
 
 const initialState = {
   selectedSort: '',
-  sortDirection: 'По возрастанию',
-  directionsOptions: ['По возрастанию', 'По убыванию'],
+  sortDirection: 'asc',
+  directionsOptions: ['asc', 'desc'],
   selectedOfferId: null,
   listOptions: ['price', 'rating'],
   currentPage: 1,

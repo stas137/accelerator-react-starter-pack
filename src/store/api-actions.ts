@@ -1,12 +1,22 @@
 import {ThunkActionResult} from '../types/action';
-import {loadComments, loadGuitar, loadGuitars, redirectToRoute} from './action';
+import {loadComments, loadGuitar, loadGuitars, loadGuitarsError, loadGuitarsSuccess, redirectToRoute} from './action';
 import {APIRoute, AppRoute} from '../utils/const';
 import {GuitarsType, GuitarType} from '../types/guitars';
+import {GuitarsQuery} from '../types/guitars-query';
+import {guitarRequestAdapter} from '../utils/common';
 
-export const fetchGuitarsAction = (): ThunkActionResult =>
+export const fetchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
-    const {data} = await api.get<GuitarsType>(APIRoute.Guitars);
-    dispatch(loadGuitars(data));
+    dispatch(loadGuitars());
+    try {
+      const {data, headers} = await api.get<GuitarsType>(APIRoute.Guitars, {params: guitarRequestAdapter(queryParams)});
+      const totalGuitars = headers['x-total-count'];
+
+      dispatch(loadGuitarsSuccess(data, totalGuitars));
+    }
+    catch {
+      dispatch(loadGuitarsError());
+    }
   };
 
 export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
@@ -17,10 +27,6 @@ export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
       dispatch(loadGuitar(data));
 
       const responseGuitarIdComments = await api.get(`${APIRoute.Guitars}/${guitarId}/comments`);
-
-      /* eslint-disable no-console */
-      console.log(responseGuitarIdComments.data);
-      /* eslint-enable no-console */
 
       dispatch(loadComments(responseGuitarIdComments.data));
 

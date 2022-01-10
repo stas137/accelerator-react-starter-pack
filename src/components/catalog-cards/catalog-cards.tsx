@@ -3,9 +3,28 @@ import {GuitarsType} from '../../types/guitars';
 
 type CatalogCardsPropsType = {
   guitars: GuitarsType,
+  loading: boolean,
+  error: boolean,
 }
 
-function CatalogCards({guitars}: CatalogCardsPropsType):JSX.Element {
+function CatalogCards({guitars, loading, error}: CatalogCardsPropsType):JSX.Element {
+
+  if (loading) {
+    return (
+      <div className="cards catalog__cards">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="cards catalog__cards">
+        Error loading. Try later
+      </div>
+    );
+  }
+
   return (
     <div className="cards catalog__cards">
       {

@@ -1,161 +1,77 @@
 import CatalogCards from '../catalog-cards/catalog-cards';
 import {
-  filterGuitarsPrice,
-  filterGuitarsStringCounts,
-  filterGuitarsType,
-  getCheckedStringCounts,
-  getCheckedTypesGuitars, getDisabledStringCounts, getDisabledTypesGuitars,
+  addQueryParams,
   getNameSort,
-  getNameTypeGuitar,
-  getPriceMaxGuitars,
-  getPriceMinGuitars,
-  getQueryString,
-  getStringCounts,
-  getStringCountsForTypes,
-  getTypeGuitarsForString,
-  getTypesGuitars,
-  sortGuitars
+  getNameTypeGuitar
 } from '../../utils/common';
-import {Dispatch} from '@reduxjs/toolkit';
+
 import {connect, ConnectedProps} from 'react-redux';
-import {changeCurrentPage, changeSort, changeSortDirection} from '../../store/action';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import Footer from '../footer/footer';
 import Header from '../header/header';
 import {ChangeEvent, useEffect, useState} from 'react';
-import {useHistory, useLocation} from 'react-router-dom';
 import FilterElementString from '../filter-element-string/filter-element-string';
 import Pagination from '../pagination/pagination';
+import {GuitarsQuery} from '../../types/guitars-query';
+import {fetchGuitarsAction} from '../../store/api-actions';
+import {ThunkAppDispatch} from '../../types/action';
+import {LIST_OPTIONS, PRICE_MAX, PRICE_MIN, STRING_COUNTS_DATA, TYPES_GUITARS_DATA} from '../../utils/const';
 
 const mapStateToProps = (state: State) => ({
   guitars: state[NameSpace.Data].guitars,
-  selectedSort: state[NameSpace.Book].selectedSort,
-  sortDirection: state[NameSpace.Book].sortDirection,
-  listOptions: state[NameSpace.Book].listOptions,
-  currentPage: state[NameSpace.Book].currentPage,
+  total: state[NameSpace.Data].total,
+  loading: state[NameSpace.Data].loading,
+  error: state[NameSpace.Data].error,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onChangeSort(selectedSort: string) {
-    dispatch(changeSort(selectedSort));
-  },
-  onChangeSortDirection(sortDirection: string) {
-    dispatch(changeSortDirection(sortDirection));
-  },
-  onChangeCurrentPage(currentPage: number) {
-    dispatch(changeCurrentPage(currentPage));
+const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  onLoadGuitars(queryParams: GuitarsQuery) {
+    dispatch(fetchGuitarsAction(queryParams));
   },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFromRedux):JSX.Element {
+const defaultQueries = {
+  page: 1,
+  perPage: 9,
+  type: [],
+  stringCount: [],
+};
 
-  const history = useHistory();
-  const location = useLocation();
+function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):JSX.Element {
 
-  const historyPush = (queryString: string): void => {
-    history.push({
-      pathname: '/',
-      search: queryString,
-    });
+  const [params, setParams] = useState<GuitarsQuery>(defaultQueries);
+
+  const [priceMaxFilter, setPriceMaxFilter] = useState<number>(PRICE_MAX);
+  const [priceMinFilter, setPriceMinFilter] = useState<number>(PRICE_MIN);
+
+
+  const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
+    const queryParams: GuitarsQuery = {...defaultQueries, ...addQueryParams(queries)};
+
+    if (typeof queryParams.type === 'string') {
+      queryParams.type = [queryParams.type];
+    }
+
+    if (typeof queryParams.stringCount === 'string') {
+      queryParams.stringCount = [queryParams.stringCount];
+    }
+
+    setParams(queryParams);
+    onLoadGuitars(queryParams);
+
+    // eslint-disable-next-line no-console
+    console.log(queryParams);
   };
 
-  const [portionSize] = useState<number>(2);
-  const [guitarsPerPage] = useState<number>(6);
-
-  const lastGuitarIndex = currentPage * guitarsPerPage;
-  const firstGuitarIndex = lastGuitarIndex - guitarsPerPage;
-
-  const [stringCounts, setStringCounts] = useState<number []>([]);
-  const [typesGuitars, setTypesGuitars] = useState<string []>([]);
-  const [selectedSort, setSelectedSort] = useState<string>('');
-  const [sortDirection, setSortDirection] = useState<string>('asc');
-
-  const filteredGuitarsByType = filterGuitarsType(guitars, typesGuitars);
-  const filteredGuitarsByStringCounts = filterGuitarsStringCounts(filteredGuitarsByType, stringCounts);
-  const sortedGuitars = sortGuitars(selectedSort, sortDirection, filteredGuitarsByStringCounts);
-
-  const priceMinGuitars = getPriceMinGuitars(sortedGuitars);
-  const [priceMin] = useState<number>(priceMinGuitars);
-  const [priceMinFilter, setPriceMinFilter] = useState<number>(priceMin);
-
-  const priceMaxGuitars = getPriceMaxGuitars(sortedGuitars);
-  const [priceMax] = useState<number>(priceMaxGuitars);
-  const [priceMaxFilter, setPriceMaxFilter] = useState<number>(priceMax);
 
   useEffect(() => {
+    handleAddQueryParams();
+  }, []);
 
-    const paramsEntries = new URLSearchParams(location.search).entries();
-    const paramSearchObject = Object.fromEntries(paramsEntries);
-
-    if (paramSearchObject.type) {
-      setTypesGuitars(paramSearchObject.type.split(','));
-    } else {
-      setTypesGuitars([]);
-    }
-
-    if (paramSearchObject.stringCounts) {
-      const paramSearchObjectNumber = paramSearchObject.stringCounts.split(',').map((item) => Number(item));
-      setStringCounts(paramSearchObjectNumber);
-    } else {
-      setStringCounts([]);
-    }
-
-    if (paramSearchObject.page) {
-      onChangeCurrentPage(Number(paramSearchObject.page));
-    } else {
-      onChangeCurrentPage(1);
-    }
-
-    if (paramSearchObject._sort) {
-      setSelectedSort(paramSearchObject._sort);
-    } else {
-      setSelectedSort('');
-    }
-
-    if (paramSearchObject._order) {
-      setSortDirection(paramSearchObject._order);
-    } else {
-      setSortDirection('asc');
-    }
-
-    if (paramSearchObject.price_gte && paramSearchObject.price_lte && (Number(paramSearchObject.price_gte) < Number(paramSearchObject.price_lte))) {
-      if (Number(paramSearchObject.price_lte) > priceMax || Number(paramSearchObject.price_lte) < 0 || Number(paramSearchObject.price_lte) < priceMinFilter) {
-        setPriceMaxFilter(priceMax);
-      } else {
-        setPriceMaxFilter(Number(paramSearchObject.price_lte));
-      }
-
-      if (Number(paramSearchObject.price_gte) < priceMin || Number(paramSearchObject.price_gte) > priceMax) {
-        setPriceMinFilter(priceMin);
-      } else {
-        setPriceMinFilter(Number(paramSearchObject.price_gte));
-      }
-    } else {
-      setPriceMinFilter(priceMin);
-      setPriceMaxFilter(priceMax);
-    }
-
-  }, [location.search]);
-
-  const filteredGuitarsByPrice = filterGuitarsPrice(priceMinFilter, priceMaxFilter, sortedGuitars);
-
-  //для вывода нужных гитар на странице
-  const guitarsPage = filteredGuitarsByPrice.slice(firstGuitarIndex, lastGuitarIndex);
-
-  const stringCountsData = getStringCounts(guitars);
-  const typesGuitarsData = getTypesGuitars(guitars);
-  const stringCountsForTypes = getStringCountsForTypes(guitars, typesGuitars);
-  const typeGuitarsForString = getTypeGuitarsForString(guitars, stringCounts);
-
-  const disabledStringCounts: number[] = getDisabledStringCounts(stringCountsForTypes, stringCountsData);
-  const disabledTypesGuitars: string[] = getDisabledTypesGuitars(typeGuitarsForString, typesGuitarsData);
-
-  const checkedStringCounts: number[] = getCheckedStringCounts(stringCountsForTypes, stringCounts);
-  const checkedTypesGuitars: string[] = getCheckedTypesGuitars(typeGuitarsForString, typesGuitars);
 
   const handleChangeMinPrice = (e: ChangeEvent<HTMLInputElement>) => {
     setPriceMinFilter(Number(e.target.value));
@@ -166,60 +82,28 @@ function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFro
   };
 
   const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) < priceMin || Number(e.target.value) > priceMax) {
-      e.target.value = priceMin.toString();
+    if (Number(e.target.value) < PRICE_MIN || Number(e.target.value) > PRICE_MAX) {
+      e.target.value = PRICE_MIN.toString();
+      setPriceMinFilter(PRICE_MIN);
     }
-    setPriceMinFilter(Number(e.target.value));
-    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, sortDirection, Number(e.target.value), priceMaxFilter);
-    historyPush(queryString);
 
+    handleAddQueryParams({ minPrice: Number(e.target.value)} );
   };
 
   const handleBlurInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
-    if (Number(e.target.value) > priceMax || !e.target.value.length || Number(e.target.value) < 0 || Number(e.target.value) < priceMinFilter) {
-      e.target.value = priceMax.toString();
+    if (Number(e.target.value) > PRICE_MAX || !e.target.value.length || Number(e.target.value) < 0 || Number(e.target.value) < priceMinFilter) {
+      e.target.value = PRICE_MAX.toString();
+      setPriceMaxFilter(PRICE_MAX);
     }
-    setPriceMaxFilter(Number(e.target.value));
-    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, sortDirection, priceMinFilter, Number(e.target.value));
-    historyPush(queryString);
 
+    handleAddQueryParams({ maxPrice: Number(e.target.value)} );
   };
 
-  const handleInputTypesGuitarChange = (typeGuitar: string) => {
-
-    if (!typesGuitars.includes(typeGuitar)) {
-      const queryString = getQueryString([...typesGuitars, typeGuitar], stringCounts, selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
-      historyPush(queryString);
-    } else {
-      const newTypesGuitars = typesGuitars.filter((item) => item !== typeGuitar);
-      const queryString = getQueryString([...newTypesGuitars], stringCounts, selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
-      historyPush(queryString);
-    }
-  };
-
-  const handleInputStringsChange = (stringCount: number) => {
-
-    if (!stringCounts.includes(stringCount)) {
-      //setStringCounts([...stringCounts, stringCount]);
-      const queryString = getQueryString(typesGuitars, [...stringCounts, stringCount], selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
-      historyPush(queryString);
-    } else {
-      const newStringCounts = stringCounts.filter((item) => item !== stringCount);
-      //setStringCounts([...newStringCounts]);
-      const queryString = getQueryString(typesGuitars, [...newStringCounts], selectedSort, sortDirection, priceMinFilter, priceMaxFilter);
-      historyPush(queryString);
-    }
-  };
 
   const handleChangeSort = (newSelectedSort: string) => {
-    const queryString = getQueryString(typesGuitars, stringCounts, newSelectedSort, sortDirection, priceMinFilter, priceMaxFilter);
-    historyPush(queryString);
+    handleAddQueryParams({ _sort: newSelectedSort });
   };
 
-  const handleChangeSortDirection = (newSortDirection: string) => {
-    const queryString = getQueryString(typesGuitars, stringCounts, selectedSort, newSortDirection, priceMinFilter, priceMaxFilter);
-    historyPush(queryString);
-  };
 
   return (
     <div className="wrapper">
@@ -268,25 +152,43 @@ function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFro
               <fieldset className="catalog-filter__block">
                 <legend className="catalog-filter__block-title">Тип гитар</legend>
                 {
-                  typesGuitarsData.map((item) => (
-                    <div className="form-checkbox catalog-filter__block-item" key={item}>
-                      <input className="visually-hidden" type="checkbox" id={item} name={item}
-                        checked={checkedTypesGuitars.includes(item)}
-                        disabled={disabledTypesGuitars.includes(item)}
-                        onChange={() => handleInputTypesGuitarChange(item)}
-                      />
-                      <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
-                    </div>
-                  ))
+                  TYPES_GUITARS_DATA.map((item) => {
+                    const checked = params.type.includes(item);
+                    return (
+                      <div className="form-checkbox catalog-filter__block-item" key={item}>
+                        <input
+                          className="visually-hidden"
+                          type="checkbox"
+                          id={item}
+                          name={item}
+                          checked={checked}
+                          onChange={() => handleAddQueryParams({
+                            type: checked ? params.type.filter((type) => type !== item) : [...params.type, item],
+                          })}
+                        />
+                        <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
+                      </div>
+                    );
+                  })
                 }
               </fieldset>
               <fieldset className="catalog-filter__block">
                 <legend className="catalog-filter__block-title">Количество струн</legend>
 
                 {
-                  stringCountsData.map((item) => (
-                    <FilterElementString key={item} item={item} checked={checkedStringCounts.includes(item)} disabled={disabledStringCounts.includes(item)} handleInputStringsChange={handleInputStringsChange} />
-                  ))
+                  STRING_COUNTS_DATA.map((item) => {
+                    const checked = params.stringCount.includes(item);
+                    return (
+                      <FilterElementString
+                        key={item}
+                        item={item}
+                        checked={checked}
+                        handleInputStringsChange={() => handleAddQueryParams({
+                          stringCount: checked ? params.stringCount.filter((stringCount) => stringCount !== item) : [...params.stringCount, item],
+                        })}
+                      />
+                    );
+                  })
                 }
 
               </fieldset>
@@ -295,7 +197,7 @@ function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFro
               <h2 className="catalog-sort__title">Сортировать:</h2>
               <div className="catalog-sort__type">
                 {
-                  listOptions.map((item) => item === selectedSort
+                  LIST_OPTIONS.map((item) => item === params._sort
                     ? (
                       <button
                         className="catalog-sort__type-button catalog-sort__type-button--active"
@@ -322,18 +224,19 @@ function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFro
               </div>
               <div className="catalog-sort__order">
                 {
-                  sortDirection === 'asc'
+
+                  params._order === 'asc'
                     ? (
                       <>
                         <button className="catalog-sort__order-button catalog-sort__order-button--up catalog-sort__order-button--active" aria-label="По возрастанию" tabIndex={-1} >
                         </button>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--down" aria-label="По убыванию" onClick={() => handleChangeSortDirection('desc')} >
+                        <button className="catalog-sort__order-button catalog-sort__order-button--down" aria-label="По убыванию" onClick={() => handleAddQueryParams({ _order: 'desc' })} >
                         </button>
                       </>
                     )
                     : (
                       <>
-                        <button className="catalog-sort__order-button catalog-sort__order-button--up" aria-label="По возрастанию" tabIndex={-1}  onClick={() => handleChangeSortDirection('asc')}>
+                        <button className="catalog-sort__order-button catalog-sort__order-button--up" aria-label="По возрастанию" tabIndex={-1}  onClick={() => handleAddQueryParams({ _order: 'asc' })}>
                         </button>
                         <button className="catalog-sort__order-button catalog-sort__order-button--down catalog-sort__order-button--active" aria-label="По убыванию" >
                         </button>
@@ -343,13 +246,17 @@ function Main({guitars, listOptions, currentPage, onChangeCurrentPage}: PropsFro
               </div>
             </div>
 
-            <CatalogCards guitars={guitarsPage} />
+            <CatalogCards
+              guitars={guitars}
+              loading={loading}
+              error={error}
+            />
 
             <Pagination
-              currentPage={currentPage}
-              guitarsPerPage={guitarsPerPage}
-              guitarsTotalCount={filteredGuitarsByPrice.length}
-              portionSize={portionSize}
+              page={params.page}
+              perPage={params.perPage}
+              totalCount={total}
+              onChange={(page: number) => handleAddQueryParams({page})}
             />
           </div>
         </div>

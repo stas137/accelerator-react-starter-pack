@@ -1,5 +1,7 @@
 import {
   loadGuitars,
+  loadGuitarsSuccess,
+  loadGuitarsError,
   loadGuitar,
   loadComments,
   changeSort,
@@ -13,6 +15,8 @@ import {State} from './state';
 
 export enum ActionType {
   LoadGuitars = 'main/loadGuitars',
+  LoadGuitarsSuccess = 'main/loadGuitarsSuccess',
+  LoadGuitarsError = 'main/loadGuitarsError',
   LoadGuitar = 'main/loadGuitar',
   LoadComments = 'main/loadComments',
   ChangeSort = 'main/changeSort',
@@ -23,6 +27,8 @@ export enum ActionType {
 
 export type Actions =
   | ReturnType<typeof loadGuitars>
+  | ReturnType<typeof loadGuitarsSuccess>
+  | ReturnType<typeof loadGuitarsError>
   | ReturnType<typeof loadGuitar>
   | ReturnType<typeof loadComments>
   | ReturnType<typeof changeSort>

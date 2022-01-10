@@ -1754,7 +1754,7 @@ button,
 
 .catalog-sort__type-button--active {
   color: #000000;
-
+  outline: 1px solid #c90606;
   pointer-events: none;
 }
 

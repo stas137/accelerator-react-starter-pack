@@ -6,10 +6,6 @@ type ReviewPropsType = {
 
 function Review({comment}: ReviewPropsType):JSX.Element {
 
-  /* eslint-disable no-console */
-  console.log(comment);
-  /* eslint-enable no-console */
-
   return (
     <div className="review">
       <div className="review__wrapper">

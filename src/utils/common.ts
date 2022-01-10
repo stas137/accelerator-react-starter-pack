@@ -1,8 +1,64 @@
 import {GuitarsType, GuitarType} from '../types/guitars';
+import {GuitarsQuery} from '../types/guitars-query';
+import {stringify, parse} from 'query-string';
+import {RequestAdapterReturnType} from '../types/request-adapter';
 
 export const convertPath = (path: string):string => {
   const pathParts = path.split('/');
   return `/${pathParts[0]}/content/${pathParts[1]}`;
+};
+
+export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterReturnType => {
+
+  const _start = (queryParams.page - 1) * queryParams.perPage;
+  const result: RequestAdapterReturnType = {
+    _start,
+    _end: _start + queryParams.perPage,
+  };
+
+  if (queryParams._sort) {
+    result._sort = queryParams._sort;
+    result._order = queryParams._order || 'asc';
+  }
+
+  if (queryParams.type.length) {
+    result.type = queryParams.type;
+  }
+
+  if (queryParams.stringCount.length) {
+    result.stringCount = queryParams.stringCount;
+  }
+
+  if (queryParams.minPrice && queryParams.maxPrice) {
+    result['price_gte'] = queryParams.minPrice;
+    result['price_lte'] = queryParams.maxPrice;
+  }
+
+  return result;
+};
+
+const setQueryToUrl = (searchParams: string): void => {
+  const newUrl = searchParams.length
+    ? `${window.location.protocol}//${window.location.host}${window.location.pathname}?${searchParams}`
+    : `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+
+  window.history.pushState({path: newUrl}, '', newUrl);
+};
+
+const parseQueryParams = ():GuitarsQuery => parse(window.location.search) as unknown as GuitarsQuery;
+
+export const addQueryParams = (query: Partial<GuitarsQuery>): GuitarsQuery => {
+  const searchParams: GuitarsQuery = parseQueryParams();
+  const newParams:GuitarsQuery = { ...searchParams, ...query };
+  if (newParams.page === 1) {
+    const paramsWithoutPage: Partial<GuitarsQuery> = {...newParams};
+    delete paramsWithoutPage.page;
+    setQueryToUrl(stringify(paramsWithoutPage));
+  } else {
+    setQueryToUrl(stringify(newParams));
+  }
+
+  return newParams;
 };
 
 export const comparePriceLowToHigh = (a:GuitarType, b:GuitarType):number => (a.price > b.price ? 1 : -1);
@@ -18,25 +74,19 @@ export const sortGuitars = (selectedSort: string, sortDirection: string, guitars
       switch (selectedSort) {
         case 'price':
           return [...guitars].sort(comparePriceLowToHigh);
-          break;
         case 'rating':
           return [...guitars].sort(compareRatingLowToHigh);
-          break;
         default:
           return [...guitars];
-          break;
       }
     } else {
       switch (selectedSort) {
         case 'price':
           return [...guitars].sort(comparePriceHighToLow);
-          break;
         case 'rating':
           return [...guitars].sort(compareRatingHighToLow);
-          break;
         default:
           return [...guitars];
-          break;
       }
     }
   } else {
@@ -61,16 +111,12 @@ export const getNameTypeGuitar = (type: string): string => {
   switch (type) {
     case 'acoustic':
       return 'Акустические гитары';
-      break;
     case 'electric':
       return 'Электрические';
-      break;
     case 'ukulele':
       return 'Укулеле';
-      break;
     default:
       return '';
-      break;
   }
 };
 
@@ -78,29 +124,12 @@ export const getNameSort = (type: string): string => {
   switch (type) {
     case 'price':
       return 'по цене';
-      break;
     case 'rating':
       return 'по популярности';
-      break;
     default:
       return '';
-      break;
   }
 };
-
-/*export const getNameRating = (type: string): string => {
-  switch (type) {
-    case 'asc':
-      return 'По возрастанию';
-      break;
-    case 'desc':
-      return 'По убыванию';
-      break;
-    default:
-      return '';
-      break;
-  }
-};*/
 
 export const getStringCountsForTypes = (guitars: GuitarsType, typesGuitars: string[]): number[] => {
   if (typesGuitars.length) {
