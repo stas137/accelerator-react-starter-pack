@@ -1,5 +1,5 @@
 import {combineReducers} from '@reduxjs/toolkit';
-import {guitarsData} from './guitars-data/guitars-data';
+import {guitarsData} from './guitars/guitars-data';
 import {bookProcess} from './book-process/book-process';
 
 export enum NameSpace {

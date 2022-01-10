@@ -2,7 +2,7 @@ import CatalogCards from '../catalog-cards/catalog-cards';
 import {
   addQueryParams,
   getNameSort,
-  getNameTypeGuitar
+  getNameTypeGuitar, getStringCountsForTypes, getTypesForStringCount
 } from '../../utils/common';
 
 import {connect, ConnectedProps} from 'react-redux';
@@ -16,42 +16,46 @@ import Pagination from '../pagination/pagination';
 import {GuitarsQuery} from '../../types/guitars-query';
 import {fetchGuitarsAction} from '../../store/api-actions';
 import {ThunkAppDispatch} from '../../types/action';
-import {LIST_OPTIONS, PRICE_MAX, PRICE_MIN, STRING_COUNTS_DATA, TYPES_GUITARS_DATA} from '../../utils/const';
+import {
+  LIST_OPTIONS,
+  PRICE_MAX,
+  PRICE_MIN,
+  STRING_COUNTS_DATA,
+  TYPES_GUITARS_DATA,
+  DEFAULT_QUERIES
+} from '../../utils/const';
+import {setQueryParams} from '../../store/action';
 
 const mapStateToProps = (state: State) => ({
   guitars: state[NameSpace.Data].guitars,
   total: state[NameSpace.Data].total,
   loading: state[NameSpace.Data].loading,
   error: state[NameSpace.Data].error,
+  params: state[NameSpace.Data].params,
 });
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
   onLoadGuitars(queryParams: GuitarsQuery) {
     dispatch(fetchGuitarsAction(queryParams));
   },
+  onSetParams(queryParams: GuitarsQuery) {
+    dispatch(setQueryParams(queryParams));
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-const defaultQueries = {
-  page: 1,
-  perPage: 9,
-  type: [],
-  stringCount: [],
-  comments: true,
-};
+function Main({guitars, total, loading, error, onLoadGuitars, params, onSetParams}: PropsFromRedux):JSX.Element {
 
-function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):JSX.Element {
-
-  const [params, setParams] = useState<GuitarsQuery>(defaultQueries);
+  //const [params, setParams] = useState<GuitarsQuery>(DEFAULT_QUERIES);
 
   const [priceMaxFilter, setPriceMaxFilter] = useState<number>(PRICE_MAX);
   const [priceMinFilter, setPriceMinFilter] = useState<number>(PRICE_MIN);
 
 
   const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
-    const queryParams: GuitarsQuery = {...defaultQueries, ...addQueryParams(queries)};
+    const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...addQueryParams(queries)};
 
     if (typeof queryParams.type === 'string') {
       queryParams.type = [queryParams.type];
@@ -61,7 +65,7 @@ function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):J
       queryParams.stringCount = [queryParams.stringCount];
     }
 
-    setParams(queryParams);
+    onSetParams(queryParams);
     onLoadGuitars(queryParams);
 
     // eslint-disable-next-line no-console
@@ -114,7 +118,7 @@ function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):J
           <h1 className="page-content__title title title--bigger">Каталог гитар</h1>
           <ul className="breadcrumbs page-content__breadcrumbs">
             <li className="breadcrumbs__item">
-              <a className="link" href="./main.html">Главная</a>
+              <a className="link" href="/main.html">Главная</a>
             </li>
             <li className="breadcrumbs__item">
               <a className="link">Каталог</a>
@@ -155,6 +159,11 @@ function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):J
                 {
                   TYPES_GUITARS_DATA.map((item) => {
                     const checked = params.type.includes(item);
+
+                    const enabledType = params.stringCount.length
+                      ? new Set(params.stringCount.map((stringCount) => getTypesForStringCount(stringCount)).flat(1))
+                      : new Set(TYPES_GUITARS_DATA);
+
                     return (
                       <div className="form-checkbox catalog-filter__block-item" key={item}>
                         <input
@@ -163,6 +172,7 @@ function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):J
                           id={item}
                           name={item}
                           checked={checked}
+                          disabled={!enabledType.has(item)}
                           onChange={() => handleAddQueryParams({
                             type: checked ? params.type.filter((type) => type !== item) : [...params.type, item],
                           })}
@@ -179,11 +189,17 @@ function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):J
                 {
                   STRING_COUNTS_DATA.map((item) => {
                     const checked = params.stringCount.includes(item);
+
+                    const enabledStringCount = params.type.length
+                      ? new Set(params.type.map((type) => getStringCountsForTypes(type)).flat(1))
+                      : new Set(STRING_COUNTS_DATA);
+
                     return (
                       <FilterElementString
                         key={item}
                         item={item}
                         checked={checked}
+                        disabled={!enabledStringCount.has(item)}
                         handleInputStringsChange={() => handleAddQueryParams({
                           stringCount: checked ? params.stringCount.filter((stringCount) => stringCount !== item) : [...params.stringCount, item],
                         })}

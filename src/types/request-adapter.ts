@@ -7,6 +7,7 @@ export type RequestAdapterReturnType = {
   _order?: 'asc' | 'desc',
   'price_gte'?: number,
   'price_lte'?: number,
-  _name?: string,
+  name?: string,
+  'name_like'?: string,
   _embed?: 'comments',
 };

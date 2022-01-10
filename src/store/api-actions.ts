@@ -1,5 +1,5 @@
 import {ThunkActionResult} from '../types/action';
-import {loadComments, loadGuitar, loadGuitars, loadGuitarsError, loadGuitarsSuccess, redirectToRoute} from './action';
+import {loadGuitar, loadGuitars, loadGuitarsError, loadGuitarsSuccess, redirectToRoute} from './action';
 import {APIRoute, AppRoute} from '../utils/const';
 import {GuitarsType, GuitarType} from '../types/guitars';
 import {GuitarsQuery} from '../types/guitars-query';
@@ -22,13 +22,9 @@ export const fetchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult
 export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
     try {
-      const {data} = await api.get<GuitarType>(`${APIRoute.Guitars}/${guitarId}`);
+      const {data} = await api.get<GuitarType>(`${APIRoute.Guitars}/${guitarId}?_embed=comments`);
 
       dispatch(loadGuitar(data));
-
-      const responseGuitarIdComments = await api.get(`${APIRoute.Guitars}/${guitarId}/comments`);
-
-      dispatch(loadComments(responseGuitarIdComments.data));
 
       const url = `/product/${guitarId}`;
       dispatch(redirectToRoute(url as AppRoute));

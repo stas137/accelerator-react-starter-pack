@@ -1,3 +1,5 @@
+import {GuitarsQuery} from './guitars-query';
+
 export type GuitarType = {
   id: number,
   name: string,
@@ -28,6 +30,7 @@ export type GuitarsData = {
   loading: boolean,
   total: number,
   error: boolean,
+  params: GuitarsQuery,
 };
 
 export type BookProcess = {

@@ -8,13 +8,12 @@ import Review from '../review/review';
 
 const mapStateToProps = (state: State) => ({
   guitar: state[NameSpace.Data].guitar,
-  comments: state[NameSpace.Data].guitar.comments,
 });
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Product({guitar, comments}: PropsFromRedux):JSX.Element {
+function Product({guitar}: PropsFromRedux):JSX.Element {
 
   const arr = Array.from({length: 5}, (_, index) => index + 1);
 
@@ -24,17 +23,22 @@ function Product({guitar, comments}: PropsFromRedux):JSX.Element {
       <main className="page-content">
         <div className="container">
           <h1 className="page-content__title title title--bigger">Товар</h1>
-          <ul className="breadcrumbs page-content__breadcrumbs">
-            <li className="breadcrumbs__item">
-              <a className="link" href="./main.html">Главная</a>
-            </li>
-            <li className="breadcrumbs__item">
-              <a className="link" href="./main.html">Каталог</a>
-            </li>
-            <li className="breadcrumbs__item">
-              <a className="link">Товар</a>
-            </li>
-          </ul>
+
+          {
+            <ul className="breadcrumbs page-content__breadcrumbs">
+              <li className="breadcrumbs__item" key={'main'}>
+                <a className="link" href="/">Главная</a>
+              </li>
+              <li className="breadcrumbs__item" key={'catalog'}>
+                <a className="link" href="/">Каталог</a>
+              </li>
+              <li className="breadcrumbs__item" key={'product'}>
+                <a className="link">Товар</a>
+              </li>
+            </ul>
+          }
+
+
           <div className="product-container">
             <img className="product-container__img" src={convertPath(guitar.previewImg)} width="90" height="235" alt="" />
             <div className="product-container__info-wrapper">
@@ -44,18 +48,18 @@ function Product({guitar, comments}: PropsFromRedux):JSX.Element {
                 {
                   arr.map((item) => item <= guitar.rating
                     ? (
-                      <svg width="14" height="14" aria-hidden="true">
+                      <svg width="14" height="14" aria-hidden="true" key={item}>
                         <use xlinkHref="#icon-full-star"></use>
                       </svg>
                     )
                     : (
-                      <svg width="14" height="14" aria-hidden="true">
+                      <svg width="14" height="14" aria-hidden="true" key={item}>
                         <use xlinkHref="#icon-star"></use>
                       </svg>
                     ))
                 }
 
-                <span className="rate__count">{comments.length}</span>
+                <span className="rate__count">{guitar.comments.length}</span>
                 <span className="rate__message"></span>
               </div>
               <div className="tabs">
@@ -63,18 +67,20 @@ function Product({guitar, comments}: PropsFromRedux):JSX.Element {
                 <a className="button button--black-border button--medium tabs__button" href="#description">Описание</a>
                 <div className="tabs__content" id="characteristics">
                   <table className="tabs__table">
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Артикул:</td>
-                      <td className="tabs__value">{guitar.vendorCode}</td>
-                    </tr>
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Тип:</td>
-                      <td className="tabs__value">{guitar.type}</td>
-                    </tr>
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Количество струн:</td>
-                      <td className="tabs__value">{guitar.stringCount}</td>
-                    </tr>
+                    <tbody>
+                      <tr className="tabs__table-row">
+                        <td className="tabs__title">Артикул:</td>
+                        <td className="tabs__value">{guitar.vendorCode}</td>
+                      </tr>
+                      <tr className="tabs__table-row">
+                        <td className="tabs__title">Тип:</td>
+                        <td className="tabs__value">{guitar.type}</td>
+                      </tr>
+                      <tr className="tabs__table-row">
+                        <td className="tabs__title">Количество струн:</td>
+                        <td className="tabs__value">{guitar.stringCount}</td>
+                      </tr>
+                    </tbody>
                   </table>
                   <p className="tabs__product-description hidden">
                     {guitar.description}
@@ -93,7 +99,7 @@ function Product({guitar, comments}: PropsFromRedux):JSX.Element {
             <a className="button button--red-border button--big reviews__sumbit-button" href="#">Оставить отзыв</a>
 
             {
-              comments.map((comment) => <Review key={comment.id} comment={comment} />)
+              guitar.comments.map((comment) => <Review key={comment.id} comment={comment} />)
             }
 
             <button className="button button--medium reviews__more-button">Показать еще отзывы</button>

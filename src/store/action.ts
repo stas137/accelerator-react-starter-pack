@@ -1,6 +1,7 @@
 import {CommentsType, GuitarsType, GuitarType} from '../types/guitars';
 import {ActionType} from '../types/action';
 import {AppRoute} from '../utils/const';
+import {GuitarsQuery} from '../types/guitars-query';
 
 export const loadGuitars = () => ({
   type: ActionType.LoadGuitars,
@@ -18,6 +19,11 @@ export const loadGuitarsError = () => ({
 export const loadGuitar = (guitar: GuitarType) => ({
   type: ActionType.LoadGuitar,
   payload: guitar,
+} as const);
+
+export const setQueryParams = (queryParams: GuitarsQuery) => ({
+  type: ActionType.SetQueryParams,
+  payload: queryParams,
 } as const);
 
 export const loadComments = (comments: CommentsType) => ({

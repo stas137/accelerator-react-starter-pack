@@ -2,39 +2,67 @@ import React, {ChangeEvent, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {NameSpace} from '../../store/root-reducer';
 import {connect, ConnectedProps} from 'react-redux';
-import {GuitarsType} from '../../types/guitars';
 import {ThunkAppDispatch} from '../../types/action';
-import {fetchGuitarAction} from '../../store/api-actions';
+import {fetchGuitarAction, fetchGuitarsAction} from '../../store/api-actions';
 import {Link} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {GuitarsQuery} from '../../types/guitars-query';
+import {DEFAULT_QUERIES} from '../../utils/const';
+import {addQueryParams} from '../../utils/common';
+import {setQueryParams} from '../../store/action';
+
 
 const mapStateToProps = (state: State) => ({
   guitars: state[NameSpace.Data].guitars,
+  params: state[NameSpace.Data].params,
 });
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  onLoadGuitars(queryParams: GuitarsQuery) {
+    dispatch(fetchGuitarsAction(queryParams));
+  },
   onClickGuitar(guitarId: number) {
     dispatch(fetchGuitarAction(guitarId));
+  },
+  onSetParams(queryParams: GuitarsQuery) {
+    dispatch(setQueryParams(queryParams));
   },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
+function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromRedux): JSX.Element {
 
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchValue, setSearchValue] = useState('');
 
-  const filterGuitars = (searchString: string) => guitars.filter((item) => item.name.toLowerCase().includes(searchString.toLowerCase()));
-  const filteredGuitars: GuitarsType = filterGuitars(searchValue);
+  const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
+    const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...addQueryParams(queries)};
+
+    if (typeof queryParams.type === 'string') {
+      queryParams.type = [queryParams.type];
+    }
+
+    if (typeof queryParams.stringCount === 'string') {
+      queryParams.stringCount = [queryParams.stringCount];
+    }
+
+    onSetParams(queryParams);
+    onLoadGuitars(queryParams);
+
+    // eslint-disable-next-line no-console
+    console.log(queryParams);
+  };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
 
     if (searchRef.current !== null) {
       setSearchValue(searchRef.current.value);
+      handleAddQueryParams({ nameLike: searchRef.current.value} );
     }
+
   };
 
   const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
@@ -43,9 +71,9 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
       searchRef.current.value = '';
       setSearchValue(searchRef.current.value);
 
-      if (filteredGuitars) {
-        onClickGuitar(filteredGuitars[0].id);
-      }
+      /*if (guitars) {
+        onClickGuitar(guitars[0].id);
+      }*/
     } else {
       toast.configure();
       toast.info('Введите данные для поиска');
@@ -53,6 +81,13 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
   };
 
   const handleClickListItem = (guitarId: number) => {
+
+    if (searchRef.current !== null) {
+      searchRef.current.value = '';
+      setSearchValue('');
+      onSetParams(DEFAULT_QUERIES);
+    }
+
     onClickGuitar(guitarId);
   };
 
@@ -100,7 +135,7 @@ function Header({guitars, onClickGuitar}: PropsFromRedux): JSX.Element {
               ? (
                 <ul className="form-search__select-list">
                   {
-                    filteredGuitars.map((item) => (
+                    guitars.map((item) => (
                       <li
                         className="form-search__select-item"
                         tabIndex={0}

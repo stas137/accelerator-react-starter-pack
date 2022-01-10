@@ -2,6 +2,7 @@ import {GuitarsType, GuitarType} from '../types/guitars';
 import {GuitarsQuery} from '../types/guitars-query';
 import {stringify, parse} from 'query-string';
 import {RequestAdapterReturnType} from '../types/request-adapter';
+import {STRING_COUNT_FOR_TYPE, TYPE_FOR_STRING_COUNT} from './const';
 
 export const convertPath = (path: string):string => {
   const pathParts = path.split('/');
@@ -38,6 +39,9 @@ export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterR
     result._embed = 'comments';
   }
 
+  if (queryParams.nameLike) {
+    result['name_like'] = queryParams.nameLike;
+  }
 
   return result;
 };
@@ -136,14 +140,20 @@ export const getNameSort = (type: string): string => {
   }
 };
 
-export const getStringCountsForTypes = (guitars: GuitarsType, typesGuitars: string[]): number[] => {
-  if (typesGuitars.length) {
-    const temp: GuitarsType[] = [];
-    typesGuitars.forEach((itemTypes) => temp.push(guitars.filter((item) => item.type === itemTypes)));
-    const result = temp.map((item) => item.map((el) => el.stringCount));
-    return Array.from(new Set(result.flat(1)));
+export const getStringCountsForTypes = (type: string): string[] | undefined => { //(guitarsData: GuitarsType, typesGuitars: string[]): number[] => {
+  for (const [key, value] of Object.entries(STRING_COUNT_FOR_TYPE)) {
+    if (key === type) {
+      return value;
+    }
   }
-  return [];
+};
+
+export const getTypesForStringCount = (stringCount: string): string[] | undefined => {
+  for (const [key, value] of Object.entries(TYPE_FOR_STRING_COUNT)) {
+    if (key === stringCount) {
+      return value;
+    }
+  }
 };
 
 export const getCheckedStringCounts = (stringCountsForTypes: number[], stringCounts: number[]) => {
@@ -178,16 +188,6 @@ export const getDisabledTypesGuitars = (typeGuitarsForString: string[], typesGui
   }
 };
 
-
-export const getTypeGuitarsForString = (guitars: GuitarsType, stringCounts: number[]): string[] => {
-  if (stringCounts.length) {
-    const temp: GuitarsType[] = [];
-    stringCounts.forEach((itemString) => temp.push(guitars.filter((item) => item.stringCount === itemString)));
-    const result = temp.map((item) => item.map((el) => el.type));
-    return Array.from(new Set(result.flat(1)));
-  }
-  return [];
-};
 
 export const getPriceMinGuitars = (guitars: GuitarsType): number => {
   const priceList: number[] = guitars.map((guitar) => guitar.price);

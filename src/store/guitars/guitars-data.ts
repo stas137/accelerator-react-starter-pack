@@ -1,5 +1,6 @@
 import {Actions, ActionType} from '../../types/action';
 import {GuitarsData} from '../../types/guitars';
+import {DEFAULT_QUERIES} from '../../utils/const';
 
 const initialState = {
   guitars: [],
@@ -18,6 +19,7 @@ const initialState = {
   total: 0,
   loading: false,
   error: false,
+  params: DEFAULT_QUERIES,
 };
 
 const guitarsData = (state: GuitarsData = initialState, action: Actions): GuitarsData => {
@@ -51,11 +53,12 @@ const guitarsData = (state: GuitarsData = initialState, action: Actions): Guitar
         ...state,
         guitar: action.payload,
       };
-    /*case ActionType.LoadComments:
+    case ActionType.SetQueryParams:
       return {
         ...state,
-        comments: action.payload,
-      };*/
+        params: action.payload,
+      };
+
     default:
       return state;
   }
