@@ -8,7 +8,7 @@ import Review from '../review/review';
 
 const mapStateToProps = (state: State) => ({
   guitar: state[NameSpace.Data].guitar,
-  comments: state[NameSpace.Data].comments,
+  comments: state[NameSpace.Data].guitar.comments,
 });
 
 const connector = connect(mapStateToProps);

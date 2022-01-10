@@ -8,6 +8,7 @@ export type GuitarType = {
   stringCount: number,
   rating: number,
   price: number,
+  comments: CommentType[],
 };
 
 export type CommentType = {
@@ -24,7 +25,6 @@ export type CommentType = {
 export type GuitarsData = {
   guitars: GuitarType[],
   guitar: GuitarType,
-  comments: CommentType[],
   loading: boolean,
   total: number,
   error: boolean,

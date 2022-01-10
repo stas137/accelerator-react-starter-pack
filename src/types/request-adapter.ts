@@ -8,4 +8,5 @@ export type RequestAdapterReturnType = {
   'price_gte'?: number,
   'price_lte'?: number,
   _name?: string,
+  _embed?: 'comments',
 };

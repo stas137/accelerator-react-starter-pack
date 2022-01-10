@@ -8,4 +8,5 @@ export type GuitarsQuery = {
   _sort?: string,
   _order?: 'asc' | 'desc',
   name?: string,
+  comments: boolean,
 };

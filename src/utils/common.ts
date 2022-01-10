@@ -34,6 +34,11 @@ export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterR
     result['price_lte'] = queryParams.maxPrice;
   }
 
+  if (queryParams.comments) {
+    result._embed = 'comments';
+  }
+
+
   return result;
 };
 

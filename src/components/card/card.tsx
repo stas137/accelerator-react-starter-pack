@@ -28,7 +28,7 @@ function Card({guitar}: CardPropsType):JSX.Element {
             )
           }
 
-          <span className="rate__count">{}</span>
+          <span className="rate__count">{guitar.comments.length}</span>
           <span className="rate__message"></span>
         </div>
         <p className="product-card__title">{guitar.name}</p>

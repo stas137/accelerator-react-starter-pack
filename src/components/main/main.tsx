@@ -39,6 +39,7 @@ const defaultQueries = {
   perPage: 9,
   type: [],
   stringCount: [],
+  comments: true,
 };
 
 function Main({guitars, total, loading, error, onLoadGuitars}: PropsFromRedux):JSX.Element {

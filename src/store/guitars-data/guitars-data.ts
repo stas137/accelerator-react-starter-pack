@@ -13,8 +13,8 @@ const initialState = {
     stringCount: 0,
     rating: 0,
     price: 0,
+    comments: [],
   },
-  comments: [],
   total: 0,
   loading: false,
   error: false,
@@ -51,11 +51,11 @@ const guitarsData = (state: GuitarsData = initialState, action: Actions): Guitar
         ...state,
         guitar: action.payload,
       };
-    case ActionType.LoadComments:
+    /*case ActionType.LoadComments:
       return {
         ...state,
         comments: action.payload,
-      };
+      };*/
     default:
       return state;
   }
