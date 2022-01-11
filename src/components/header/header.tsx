@@ -60,7 +60,7 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
 
     if (searchRef.current !== null) {
       setSearchValue(searchRef.current.value);
-      handleAddQueryParams({ nameLike: searchRef.current.value} );
+      handleAddQueryParams({ nameLike: [searchRef.current.value]} );
     }
 
   };
@@ -85,7 +85,7 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
     if (searchRef.current !== null) {
       searchRef.current.value = '';
       setSearchValue('');
-      onSetParams(DEFAULT_QUERIES);
+      handleAddQueryParams({ nameLike: []} );
     }
 
     onClickGuitar(guitarId);

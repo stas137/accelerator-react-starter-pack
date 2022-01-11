@@ -39,8 +39,8 @@ export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterR
     result._embed = 'comments';
   }
 
-  if (queryParams.nameLike) {
-    result['name_like'] = queryParams.nameLike;
+  if (queryParams.nameLike?.length) {
+    result['name_like'] = queryParams.nameLike[0];
   }
 
   return result;
