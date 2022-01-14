@@ -1,5 +1,6 @@
 import Card from '../card/card';
 import {GuitarsType} from '../../types/guitars';
+import Loading from '../loading/loading';
 
 type CatalogCardsPropsType = {
   guitars: GuitarsType,
@@ -12,7 +13,7 @@ function CatalogCards({guitars, loading, error}: CatalogCardsPropsType):JSX.Elem
   if (loading) {
     return (
       <div className="cards catalog__cards">
-        Loading...
+        <Loading />
       </div>
     );
   }
@@ -28,7 +29,7 @@ function CatalogCards({guitars, loading, error}: CatalogCardsPropsType):JSX.Elem
   return (
     <div className="cards catalog__cards">
       {
-        guitars.map((guitar) => <Card key={guitar.id} guitar={guitar}/>)
+        guitars.map((guitar) => <Card key={guitar.id} guitar={guitar} />)
       }
     </div>
   );

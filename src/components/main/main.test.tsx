@@ -1,16 +1,18 @@
 import {render, screen} from '@testing-library/react';
-import App from './app';
-import {Provider} from 'react-redux';
-import {Router} from 'react-router-dom';
-import React from 'react';
-import {createMemoryHistory} from 'history';
-import thunk from 'redux-thunk';
-import {api} from '../../services/api';
 import {configureMockStore} from '@jedmao/redux-mock-store';
+import {createMemoryHistory} from 'history';
+import {Route, Router} from 'react-router-dom';
+import {AppRoute, DEFAULT_QUERIES} from '../../utils/const';
+import {Provider} from 'react-redux';
+import {
+  makeFakeGuitar,
+  makeFakeGuitars, makeFakeTotal
+} from '../../utils/mock';
+import Main from './main';
 import {State} from '../../types/state';
 import {AnyAction} from 'redux';
-import {makeFakeGuitar, makeFakeGuitars, makeFakeTotal} from '../../utils/mock';
-import {AppRoute, DEFAULT_QUERIES} from '../../utils/const';
+import thunk from 'redux-thunk';
+import {api} from '../../services/api';
 
 const middlewares = [thunk.withExtraArgument(api)];
 const mockStore = configureMockStore<State, AnyAction>(middlewares);
@@ -37,24 +39,29 @@ const store = mockStore({
   },
 });
 
-describe('Component: App', () => {
 
-  test('should render correct', () => {
+describe('Component: Main', () => {
 
+  beforeEach(() => {
     history.push(AppRoute.Main);
+  });
+
+  it('should render correctly', () => {
 
     render(
       <Provider store={store}>
         <Router history={history}>
-          <App />
+          <Route exact path={AppRoute.Main}>
+            <Main />
+          </Route>
         </Router>
       </Provider>,
     );
 
-    const textElement = screen.getByText(/Каталог гитар/i);
-    expect(textElement).toBeInTheDocument();
+    expect(screen.getByText(/Каталог гитар/i)).toBeInTheDocument();
+    expect(screen.getByText(/Фильтр/i)).toBeInTheDocument();
+    expect(screen.getByText(/Сортировать/i)).toBeInTheDocument();
+
   });
 
 });
-
-

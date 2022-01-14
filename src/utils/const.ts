@@ -27,9 +27,12 @@ export const STRING_COUNT_FOR_TYPE = {
   'ukulele': ['4'],
 };
 
+export const START_PAGE = 1;
+export const PER_PAGE = 9;
+
 export const DEFAULT_QUERIES = {
-  page: 1,
-  perPage: 9,
+  page: START_PAGE,
+  perPage: PER_PAGE,
   type: [],
   stringCount: [],
   comments: true,

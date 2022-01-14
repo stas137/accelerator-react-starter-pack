@@ -1,18 +1,21 @@
 import {Actions, ActionType} from '../../types/action';
-import {GuitarsData} from '../../types/guitars';
 import {DEFAULT_QUERIES} from '../../utils/const';
+import {SearchData} from '../../types/guitars';
 
-const initialState: GuitarsData = {
+const initialState = {
   guitars: [],
-  total: 0,
   loading: false,
   error: false,
-  params: DEFAULT_QUERIES,
+  total: 0,
+  params: {
+    ...DEFAULT_QUERIES,
+    comments: true,
+  },
 };
 
-const guitarsData = (state: GuitarsData = initialState, action: Actions): GuitarsData => {
+const searchData = (state: SearchData = initialState, action: Actions): SearchData => {
   switch (action.type) {
-    case ActionType.LoadGuitars:
+    case ActionType.LoadSearchGuitars:
       return {
         ...state,
         guitars: [],
@@ -20,7 +23,7 @@ const guitarsData = (state: GuitarsData = initialState, action: Actions): Guitar
         error: false,
         total: 0,
       };
-    case ActionType.LoadGuitarsSuccess:
+    case ActionType.LoadSearchGuitarsSuccess:
       return {
         ...state,
         guitars: action.payload.guitars,
@@ -28,7 +31,7 @@ const guitarsData = (state: GuitarsData = initialState, action: Actions): Guitar
         error: false,
         total: action.payload.total,
       };
-    case ActionType.LoadGuitarsError:
+    case ActionType.LoadSearchGuitarsError:
       return {
         ...state,
         guitars: [],
@@ -36,15 +39,14 @@ const guitarsData = (state: GuitarsData = initialState, action: Actions): Guitar
         error: true,
         total: 0,
       };
-    case ActionType.SetQueryParams:
+    case ActionType.SetSearchQueryParams:
       return {
         ...state,
         params: action.payload,
       };
-
     default:
       return state;
   }
 };
 
-export {guitarsData};
+export {searchData};

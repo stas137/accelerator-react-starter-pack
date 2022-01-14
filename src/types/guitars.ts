@@ -26,20 +26,22 @@ export type CommentType = {
 
 export type GuitarsData = {
   guitars: GuitarType[],
-  guitar: GuitarType,
   loading: boolean,
-  total: number,
   error: boolean,
+  total: number,
+  params: GuitarsQuery,
+};
+
+export type SearchData = {
+  guitars: GuitarType[],
+  loading: boolean,
+  error: boolean,
+  total: number,
   params: GuitarsQuery,
 };
 
 export type BookProcess = {
-  selectedSort: string,
-  sortDirection: string,
-  directionsOptions: string[],
-  selectedOfferId: number | null,
-  listOptions: string[],
-  currentPage: number,
+  guitar: GuitarType,
 };
 
 export type GuitarsType = GuitarType[];

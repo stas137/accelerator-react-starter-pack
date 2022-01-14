@@ -1,5 +1,6 @@
 import {GuitarType} from '../../types/guitars';
 import {convertPath} from '../../utils/common';
+import {Link} from 'react-router-dom';
 
 type CardPropsType = {
   guitar: GuitarType,
@@ -38,8 +39,8 @@ function Card({guitar}: CardPropsType):JSX.Element {
         </p>
       </div>
       <div className="product-card__buttons">
-        <a className="button button--mini" href="#">Подробнее</a>
-        <a className="button button--red button--mini button--add-to-cart" href="#">Купить</a>
+        <Link className="button button--mini" to="/#">Подробнее</Link>
+        <Link className="button button--red button--mini button--add-to-cart" to="/#">Купить</Link>
       </div>
     </div>
   );

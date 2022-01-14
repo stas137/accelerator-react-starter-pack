@@ -1,24 +1,33 @@
 import React, {ChangeEvent, useRef, useState} from 'react';
 import {State} from '../../types/state';
-import {NameSpace} from '../../store/root-reducer';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
-import {fetchGuitarAction, fetchGuitarsAction} from '../../store/api-actions';
-import {Link} from 'react-router-dom';
+import {fetchGuitarAction, fetchGuitarsAction, fetchSearchGuitarsAction} from '../../store/api-actions';
+import {Link, useHistory} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {GuitarsQuery} from '../../types/guitars-query';
 import {DEFAULT_QUERIES} from '../../utils/const';
-import {addQueryParams} from '../../utils/common';
-import {setQueryParams} from '../../store/action';
-
+import {setSearchQueryParams} from '../../store/action';
+import SelectList from '../select-list/select-list';
+import {
+  getErrorGuitars,
+  getGuitars,
+  getLoadingGuitars,
+  getQueryParams
+} from '../../store/search/selectors';
 
 const mapStateToProps = (state: State) => ({
-  guitars: state[NameSpace.Data].guitars,
-  params: state[NameSpace.Data].params,
+  guitars: getGuitars(state),
+  loading: getLoadingGuitars(state),
+  error: getErrorGuitars(state),
+  params: getQueryParams(state),
 });
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  onLoadSearchGuitars(queryParams: GuitarsQuery) {
+    dispatch(fetchSearchGuitarsAction(queryParams));
+  },
   onLoadGuitars(queryParams: GuitarsQuery) {
     dispatch(fetchGuitarsAction(queryParams));
   },
@@ -26,41 +35,35 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
     dispatch(fetchGuitarAction(guitarId));
   },
   onSetParams(queryParams: GuitarsQuery) {
-    dispatch(setQueryParams(queryParams));
+    dispatch(setSearchQueryParams(queryParams));
   },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromRedux): JSX.Element {
+function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGuitars, onLoadGuitars, onSetParams}: PropsFromRedux): JSX.Element {
 
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchValue, setSearchValue] = useState('');
 
+  const history = useHistory();
+
   const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
-    const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...addQueryParams(queries)};
-
-    if (typeof queryParams.type === 'string') {
-      queryParams.type = [queryParams.type];
-    }
-
-    if (typeof queryParams.stringCount === 'string') {
-      queryParams.stringCount = [queryParams.stringCount];
-    }
+    const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...queries};
 
     onSetParams(queryParams);
-    onLoadGuitars(queryParams);
+    onLoadSearchGuitars(queryParams);
 
-    // eslint-disable-next-line no-console
-    console.log(queryParams);
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
 
     if (searchRef.current !== null) {
       setSearchValue(searchRef.current.value);
-      handleAddQueryParams({ nameLike: [searchRef.current.value]} );
+      if (searchRef.current.value !== '') {
+        handleAddQueryParams({ nameLike: searchRef.current.value } );
+      }
     }
 
   };
@@ -68,12 +71,11 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
   const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if ((searchRef.current !== null) && (searchRef.current?.value !== '')) {
+
       searchRef.current.value = '';
       setSearchValue(searchRef.current.value);
 
-      /*if (guitars) {
-        onClickGuitar(guitars[0].id);
-      }*/
+      onLoadGuitars(params);
     } else {
       toast.configure();
       toast.info('Введите данные для поиска');
@@ -85,10 +87,11 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
     if (searchRef.current !== null) {
       searchRef.current.value = '';
       setSearchValue('');
-      handleAddQueryParams({ nameLike: []} );
+      //handleAddQueryParams({ nameLike: ''} );
     }
 
-    onClickGuitar(guitarId);
+    history.push(`/product/${guitarId}`);
+    //onClickGuitar(guitarId);
   };
 
   return (
@@ -100,13 +103,13 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
         <nav className="main-nav">
           <ul className="main-nav__list">
             <li>
-              <a className="link main-nav__link link--current" href="#">Каталог</a>
+              <Link className="link main-nav__link link--current" to="/">Каталог</Link>
             </li>
             <li>
-              <a className="link main-nav__link" href="#">Где купить?</a>
+              <Link className="link main-nav__link" to="/#">Где купить?</Link>
             </li>
             <li>
-              <a className="link main-nav__link" href="#">О компании</a>
+              <Link className="link main-nav__link" to="/#">О компании</Link>
             </li>
           </ul>
         </nav>
@@ -130,34 +133,23 @@ function Header({guitars, onClickGuitar, onLoadGuitars, onSetParams}: PropsFromR
             <label className="visually-hidden" htmlFor="search">Поиск</label>
           </form>
 
-          {
-            searchValue !== ''
-              ? (
-                <ul className="form-search__select-list">
-                  {
-                    guitars.map((item) => (
-                      <li
-                        className="form-search__select-item"
-                        tabIndex={0}
-                        key={item.id}
-                        onClick={() => handleClickListItem(item.id)}
-                      >
-                        {item.name}
-                      </li>))
-                  }
-                </ul>
-              )
-              : null
-          }
+          <SelectList
+            loading={loading}
+            error={error}
+            searchValue={searchValue}
+            guitars={guitars}
+            handleClickListItem={handleClickListItem}
+          />
+
 
         </div>
-        <a className="header__cart-link" href="#" aria-label="Корзина">
+        <Link className="header__cart-link" to="/#" aria-label="Корзина">
           <svg className="header__cart-icon" width="14" height="14" aria-hidden="true">
             <use xlinkHref="#icon-basket"></use>
           </svg>
           <span className="visually-hidden">Перейти в корзину</span>
           <span className="header__cart-count">2</span>
-        </a>
+        </Link>
       </div>
     </header>
   );

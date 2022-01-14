@@ -16,6 +16,19 @@ export const loadGuitarsError = () => ({
   type: ActionType.LoadGuitarsError,
 } as const);
 
+export const loadSearchGuitars = () => ({
+  type: ActionType.LoadSearchGuitars,
+} as const);
+
+export const loadSearchGuitarsSuccess = (guitars: GuitarsType, total: number) => ({
+  type: ActionType.LoadSearchGuitarsSuccess,
+  payload: { guitars, total },
+} as const);
+
+export const loadSearchGuitarsError = () => ({
+  type: ActionType.LoadSearchGuitarsError,
+} as const);
+
 export const loadGuitar = (guitar: GuitarType) => ({
   type: ActionType.LoadGuitar,
   payload: guitar,
@@ -23,6 +36,11 @@ export const loadGuitar = (guitar: GuitarType) => ({
 
 export const setQueryParams = (queryParams: GuitarsQuery) => ({
   type: ActionType.SetQueryParams,
+  payload: queryParams,
+} as const);
+
+export const setSearchQueryParams = (queryParams: GuitarsQuery) => ({
+  type: ActionType.SetSearchQueryParams,
   payload: queryParams,
 } as const);
 

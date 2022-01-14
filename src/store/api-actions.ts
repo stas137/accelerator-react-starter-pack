@@ -1,5 +1,12 @@
 import {ThunkActionResult} from '../types/action';
-import {loadGuitar, loadGuitars, loadGuitarsError, loadGuitarsSuccess, redirectToRoute} from './action';
+import {
+  loadGuitar,
+  loadGuitars,
+  loadGuitarsError,
+  loadGuitarsSuccess,
+  loadSearchGuitars, loadSearchGuitarsError, loadSearchGuitarsSuccess,
+  redirectToRoute
+} from './action';
 import {APIRoute, AppRoute} from '../utils/const';
 import {GuitarsType, GuitarType} from '../types/guitars';
 import {GuitarsQuery} from '../types/guitars-query';
@@ -9,6 +16,7 @@ export const fetchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult
   async (dispatch, _getState, api): Promise<void> => {
     dispatch(loadGuitars());
     try {
+
       const {data, headers} = await api.get<GuitarsType>(APIRoute.Guitars, {params: guitarRequestAdapter(queryParams)});
       const totalGuitars = headers['x-total-count'];
 
@@ -19,6 +27,20 @@ export const fetchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult
     }
   };
 
+export const fetchSearchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    dispatch(loadSearchGuitars());
+    try {
+      const {data, headers} = await api.get<GuitarsType>(APIRoute.Guitars, {params: guitarRequestAdapter(queryParams)});
+      const totalGuitars = headers['x-total-count'];
+
+      dispatch(loadSearchGuitarsSuccess(data, totalGuitars));
+    }
+    catch {
+      dispatch(loadSearchGuitarsError());
+    }
+  };
+
 export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
     try {
@@ -26,8 +48,6 @@ export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
 
       dispatch(loadGuitar(data));
 
-      const url = `/product/${guitarId}`;
-      dispatch(redirectToRoute(url as AppRoute));
     } catch {
       dispatch(redirectToRoute(AppRoute.NotFound));
     }

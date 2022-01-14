@@ -7,17 +7,15 @@ type PaginationProps = {
 
 function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX.Element {
 
-  /* const pageNumber = [];
-  const pageCount = Math.ceil(props.guitarsTotalCount / props.guitarsPerPage);
+  const pageNumber = [];
+  const pageCount = Math.ceil(totalCount / perPage);
 
-  const portionCount = Math.ceil(pageCount / props.portionSize);
-  const currentPortionNumber = Math.ceil(props.currentPage / props.portionSize);
-  const [portionNumber, setPortionNumber] = useState<number>(currentPortionNumber);
-  const leftPortionPageNumber = (portionNumber - 1) * props.portionSize + 1;
-  const rightPortionPageNumber = portionNumber * props.portionSize;*/
+  for (let i = 1; i <= pageCount; i++) {
+    pageNumber.push(i);
+  }
 
-  const handleSpanClick = (pageNumber: number) => {
-    onChange(pageNumber);
+  const handleSpanClick = (currentPage: number) => {
+    onChange(currentPage);
   };
 
   return (
@@ -37,16 +35,17 @@ function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX
             </li>)
         }
         {
-          /*pageNumber.filter((page) => (page >= leftPortionPageNumber) && (page <= rightPortionPageNumber)).map((page) => ( props.currentPage === page
-            ?
-            <li className="pagination__page pagination__page--active" key={page}>
-              <span className="link pagination__page-link" >{page}</span>
-            </li>
-            :
-            <li className="pagination__page" key={page}>
-              <span className="link pagination__page-link" onClick={() => handleSpanClick(page)} >{page}</span>
-            </li>
-          ))*/
+          pageNumber.map((item) => item === page
+            ? (
+              <li className="pagination__page pagination__page--active" key={item}>
+                <span className="link pagination__page-link" >{item}</span>
+              </li>
+            )
+            : (
+              <li className="pagination__page" key={item}>
+                <span className="link pagination__page-link" onClick={() => handleSpanClick(item)}>{item}</span>
+              </li>
+            ))
         }
         {
           page < totalCount / perPage && (
