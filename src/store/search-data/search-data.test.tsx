@@ -22,7 +22,7 @@ describe('Reducer searchData:', () => {
     expect(searchData(void 0, { type: ActionType.LoadGuitar, payload: mockGuitar })).toEqual(initialState);
   });
 
-  it('should save "guitars" data', () => {
+  it('should save "guitars-data" data', () => {
     expect(searchData(initialState, loadSearchGuitarsSuccess(mockGuitars, 5))).toEqual({
       ...initialState,
       guitars: mockGuitars,

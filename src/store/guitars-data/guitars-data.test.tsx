@@ -23,7 +23,7 @@ describe('Reducer guitarsData:', () => {
     expect(guitarsData(void 0, { type: ActionType.LoadGuitar, payload: mockGuitar })).toEqual(initialState);
   });
 
-  it('should save "guitars" data', () => {
+  it('should save "guitars-data" data', () => {
     expect(guitarsData(initialState, loadGuitarsSuccess(mockGuitars, mockTotal))).toEqual({
       ...initialState,
       guitars: mockGuitars,

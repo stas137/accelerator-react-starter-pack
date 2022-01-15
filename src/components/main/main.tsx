@@ -20,7 +20,7 @@ import {
   getLoadingGuitars,
   getQueryParams,
   getTotalCountGuitars
-} from '../../store/guitars/selectors';
+} from '../../store/guitars-data/selectors';
 
 import CatalogSortOrder from './../catalog-sort-order/catalog-sort-order';
 import CatalogSortType from '../catalog-sort-type/catalog-sort-type';

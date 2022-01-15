@@ -1,7 +1,7 @@
 import {combineReducers} from '@reduxjs/toolkit';
-import {guitarsData} from './guitars/guitars-data';
+import {guitarsData} from './guitars-data/guitars-data';
 import {bookProcess} from './book-process/book-process';
-import {searchData} from './search/search-data';
+import {searchData} from './search-data/search-data';
 
 export enum NameSpace {
   Data = 'DATA',

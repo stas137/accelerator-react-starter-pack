@@ -18,7 +18,7 @@ export const fetchGuitarsAction = (queryParams: GuitarsQuery): ThunkActionResult
     try {
 
       const {data, headers} = await api.get<GuitarsType>(APIRoute.Guitars, {params: guitarRequestAdapter(queryParams)});
-      const totalGuitars = headers['x-total-count'];
+      const totalGuitars = headers['x-total-count'] || 0;
 
       dispatch(loadGuitarsSuccess(data, totalGuitars));
     }

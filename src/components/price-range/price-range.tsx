@@ -61,7 +61,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
           <label className="visually-hidden">Минимальная цена</label>
           <input
             type="number"
-            value={min}
+            value={min === PRICE_MIN ? '' : min}
+            placeholder={PRICE_MIN.toString()}
             id="priceMin"
             name="от"
             onBlur={handleBlurInputPriceMin}
@@ -72,7 +73,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
           <label className="visually-hidden">Максимальная цена</label>
           <input
             type="number"
-            value={max}
+            value={max === PRICE_MAX ? '' : max}
+            placeholder={PRICE_MAX.toString()}
             id="priceMax"
             name="до"
             onBlur={handleBlurInputPriceMax}

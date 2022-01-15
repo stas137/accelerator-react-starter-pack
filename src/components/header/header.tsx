@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useRef, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
@@ -15,7 +15,8 @@ import {
   getGuitars,
   getLoadingGuitars,
   getQueryParams
-} from '../../store/search/selectors';
+} from '../../store/search-data/selectors';
+import useDebounce from '../../hooks/use-debounce';
 
 const mapStateToProps = (state: State) => ({
   guitars: getGuitars(state),
@@ -44,10 +45,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGuitars, onLoadGuitars, onSetParams}: PropsFromRedux): JSX.Element {
 
+  const history = useHistory();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchValue, setSearchValue] = useState('');
 
-  const history = useHistory();
+  const debouncedSearchValue = useDebounce(searchValue, 500);
 
   const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
     const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...queries};
@@ -57,16 +59,11 @@ function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGui
 
   };
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-
-    if (searchRef.current !== null) {
-      setSearchValue(searchRef.current.value);
-      if (searchRef.current.value !== '') {
-        handleAddQueryParams({ nameLike: searchRef.current.value } );
-      }
+  useEffect(() => {
+    if (debouncedSearchValue) {
+      handleAddQueryParams({ nameLike: debouncedSearchValue } );
     }
-
-  };
+  }, [debouncedSearchValue]);
 
   const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -87,11 +84,13 @@ function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGui
     if (searchRef.current !== null) {
       searchRef.current.value = '';
       setSearchValue('');
-      //handleAddQueryParams({ nameLike: ''} );
     }
 
     history.push(`/product/${guitarId}`);
-    //onClickGuitar(guitarId);
+  };
+
+  const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
   };
 
   return (
@@ -128,7 +127,7 @@ function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGui
               type="text"
               autoComplete="off"
               placeholder="что вы ищите?"
-              onChange={onChange}
+              onChange={handleChangeInput}
             />
             <label className="visually-hidden" htmlFor="search">Поиск</label>
           </form>

@@ -47,12 +47,6 @@ export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterR
 };
 
 const setQueryToUrl = (searchParams: string, location: H.Location, history: H.History): void => {
-  /*const newUrl = searchParams.length
-    ? `${window.location.protocol}//${window.location.host}${window.location.pathname}?${searchParams}`
-    : `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-
-  window.history.pushState({path: newUrl}, '', newUrl);*/
-
   const newUrl = searchParams.length
     ? `${location.pathname}?${searchParams}`
     : `${location.pathname}`;
