@@ -78,9 +78,11 @@ function Main(props: PropsFromRedux):JSX.Element {
     onLoadGuitars(queryParams);
   };
 
+  /* eslint-disable */
   useEffect(() => {
     handleAddQueryParams();
   }, [onSetParams, onLoadGuitars]);
+  /* eslint-enable */
 
   const handleChangeSort = (newSelectedSort: string) => {
     handleAddQueryParams({ _sort: newSelectedSort });
