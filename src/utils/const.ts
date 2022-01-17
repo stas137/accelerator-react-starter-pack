@@ -29,7 +29,7 @@ export const STRING_COUNT_FOR_TYPE = {
   'ukulele': ['4'],
 };
 
-export const START_PAGE = 1;
+export const START_PAGE = '1';
 export const PER_PAGE = 9;
 
 export const DEFAULT_QUERIES = {

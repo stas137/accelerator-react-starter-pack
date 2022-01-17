@@ -12,7 +12,7 @@ describe('Component: Pagination', () => {
     render(
       <Router history={history}>
         <Pagination
-          page={1}
+          page={'1'}
           perPage={9}
           totalCount={3}
           onChange={jest.fn}

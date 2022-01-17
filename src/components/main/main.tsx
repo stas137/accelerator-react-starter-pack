@@ -47,6 +47,7 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
+
 function Main(props: PropsFromRedux):JSX.Element {
 
   const {guitars, total, loading, error, onLoadGuitars, params, onSetParams} = props;
@@ -62,9 +63,7 @@ function Main(props: PropsFromRedux):JSX.Element {
 
     const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...addQueryParams(queries, location, history)};
 
-    if (typeof queryParams.page === 'string') {
-      queryParams.page = Number(queryParams.page);
-    }
+    //queryParams.page = Number(queryParams.page);
 
     if (typeof queryParams.type === 'string') {
       queryParams.type = [queryParams.type];
@@ -147,7 +146,7 @@ function Main(props: PropsFromRedux):JSX.Element {
             page={params.page}
             perPage={params.perPage}
             totalCount={total}
-            onChange={(page: number) => handleAddQueryParams({page})}
+            onChange={(page: string) => handleAddQueryParams({page})}
           />
         </div>
       </div>

@@ -18,7 +18,7 @@ export const makeFakeGuitar = (): GuitarType => ({
 export const makeFakeGuitars = (): GuitarsType => new Array(5).fill(null).map((item) => makeFakeGuitar());
 
 export const makeFakeQueryParams = (): GuitarsQuery => ({
-  page: datatype.number(),
+  page: datatype.string(),
   perPage: datatype.number(),
   type: [],
   stringCount: [],

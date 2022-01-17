@@ -11,7 +11,7 @@ export const convertPath = (path: string): string => {
 
 export const guitarRequestAdapter = (queryParams: GuitarsQuery): RequestAdapterReturnType => {
 
-  const _start = (queryParams.page - 1) * queryParams.perPage;
+  const _start = (Number(queryParams.page) - 1) * queryParams.perPage;
   const result: RequestAdapterReturnType = {
     _start,
     _end: _start + queryParams.perPage,
@@ -65,7 +65,7 @@ export const addQueryParams = (query: Partial<GuitarsQuery>, location: H.Locatio
     delete paramsWithoutPage.page;
     setQueryToUrl(stringify(paramsWithoutPage), location, history);
 
-    newParams.page = 1;
+    newParams.page = '1';
   } else {
     setQueryToUrl(stringify(newParams), location, history);
   }

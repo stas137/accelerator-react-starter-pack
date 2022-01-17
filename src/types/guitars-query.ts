@@ -1,5 +1,5 @@
 export type GuitarsQuery = {
-  page: number,
+  page: string,
   perPage: number,
   type: string[],
   stringCount: string[],
