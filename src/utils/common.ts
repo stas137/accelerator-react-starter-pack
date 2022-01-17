@@ -58,7 +58,7 @@ const parseQueryParams = (location: H.Location):GuitarsQuery => parse(location.s
 
 export const addQueryParams = (query: Partial<GuitarsQuery>, location: H.Location, history: H.History): GuitarsQuery => {
   const searchParams: GuitarsQuery = parseQueryParams(location);
-  const newParams:GuitarsQuery = { ...searchParams, ...query };
+  const newParams: GuitarsQuery = { ...searchParams, ...query };
 
   if (Number(newParams.page) === 1 || (Number(newParams.page) > 1 && ((newParams.type?.length) || (newParams.stringCount?.length)))) {
     const paramsWithoutPage: Partial<GuitarsQuery> = {...newParams};
@@ -114,3 +114,4 @@ export const getTypesForStringCount = (stringCount: string): string[] | undefine
   }
 };
 
+export const getFillArrayFrom1toN = (n: number) => Array.from({length: n}, (_, index) => index + 1);

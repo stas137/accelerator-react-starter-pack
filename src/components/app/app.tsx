@@ -3,20 +3,11 @@ import {Route, Switch} from 'react-router-dom';
 import {AppRoute} from '../../utils/const';
 import Product from '../product/product';
 import NotFound from '../not-found/not-found';
-import {State} from '../../types/state';
-import {NameSpace} from '../../store/root-reducer';
-import {connect, ConnectedProps} from 'react-redux';
 import Header from '../header/header';
 import Footer from '../footer/footer';
 
-const mapStateToProps = (state: State) => ({
-  loading: state[NameSpace.Data].loading,
-});
 
-const connector = connect(mapStateToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-function App({loading}: PropsFromRedux): JSX.Element {
+function App(): JSX.Element {
 
   return (
     <div className="wrapper">
@@ -37,5 +28,4 @@ function App({loading}: PropsFromRedux): JSX.Element {
   );
 }
 
-export {App};
-export default connector(App);
+export default App;

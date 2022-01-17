@@ -1,6 +1,7 @@
 import {GuitarType} from '../../types/guitars';
-import {convertPath} from '../../utils/common';
+import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
 import {Link} from 'react-router-dom';
+import {RATING_MAX} from '../../utils/const';
 
 type CardPropsType = {
   guitar: GuitarType,
@@ -8,7 +9,7 @@ type CardPropsType = {
 
 function Card({guitar}: CardPropsType):JSX.Element {
 
-  const arr = Array.from({length: 5}, (_, index) => index + 1);
+  const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
 
   return (
     <div className="product-card">
@@ -17,7 +18,7 @@ function Card({guitar}: CardPropsType):JSX.Element {
         <div className="rate product-card__rate" aria-hidden="true">
           <span className="visually-hidden">Рейтинг:</span>
           {
-            arr.map((item) => item <= guitar.rating
+            arrayForRating.map((item) => item <= guitar.rating
               ? (
                 <svg width="12" height="11" aria-hidden="true" key={item}>
                   <use xlinkHref="#icon-full-star"></use>

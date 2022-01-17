@@ -11,16 +11,25 @@ type PriceRangeProps = {
 
 function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Element {
 
+  /* eslint-disable no-console */
+  console.log(Number(minPrice) || PRICE_MIN);
+  console.log(Number(maxPrice) || PRICE_MAX);
+  /* eslint-enable no-console */
+
   const [min, setMin] = useState<number>(Number(minPrice) || PRICE_MIN);
   const [max, setMax] = useState<number>(Number(maxPrice) || PRICE_MAX);
 
   useEffect(() => {
     if (minPrice) {
       setMin(minPrice);
+    } else {
+      setMin(PRICE_MIN);
     }
 
     if (maxPrice) {
       setMax(maxPrice);
+    } else {
+      setMax(PRICE_MAX);
     }
   }, [minPrice, maxPrice]);
 

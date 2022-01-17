@@ -8,6 +8,8 @@ export enum AppRoute {
   NotFound = '/not-found',
 }
 
+export const RATING_MAX = 5;
+export const DELAY_MS = 500;
 export const PRICE_MIN = 1700;
 export const PRICE_MAX = 35000;
 export const STRING_COUNTS_DATA = ['4', '6', '7', '12'];

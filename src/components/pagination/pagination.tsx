@@ -1,3 +1,5 @@
+import {getFillArrayFrom1toN} from '../../utils/common';
+
 type PaginationProps = {
   page: number,
   perPage: number,
@@ -7,12 +9,9 @@ type PaginationProps = {
 
 function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX.Element {
 
-  const pageNumber = [];
-  const pageCount = Math.ceil(totalCount / perPage);
 
-  for (let i = 1; i <= pageCount; i++) {
-    pageNumber.push(i);
-  }
+  const pageCount = Math.ceil(totalCount / perPage);
+  const pageNumber = getFillArrayFrom1toN(pageCount);
 
   const handleSpanClick = (currentPage: number) => {
     onChange(currentPage);

@@ -1,6 +1,6 @@
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
-import {convertPath} from '../../utils/common';
+import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
 import Review from '../review/review';
 import {useParams} from 'react-router-dom';
 import {useEffect} from 'react';
@@ -8,6 +8,7 @@ import {ThunkAppDispatch} from '../../types/action';
 import {fetchGuitarAction} from '../../store/api-actions';
 import {getGuitar} from '../../store/book-process/selectors';
 import {Link} from 'react-router-dom';
+import {RATING_MAX} from '../../utils/const';
 
 const mapStateToProps = (state: State) => ({
   guitar: getGuitar(state),
@@ -24,13 +25,13 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
 
-  const arr = Array.from({length: 5}, (_, index) => index + 1);
-
   const { id } = useParams<{ id?: string }>();
+
+  const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
 
   useEffect(() => {
     onLoadGuitar(Number(id));
-  }, [id]);
+  }, [id, onLoadGuitar]);
 
   return (
     <main className="page-content">
@@ -58,7 +59,7 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
             <div className="rate product-container__rating" aria-hidden="true">
               <span className="visually-hidden">Рейтинг:</span>
               {
-                arr.map((item) => item <= guitar.rating
+                arrayForRating.map((item) => item <= guitar.rating
                   ? (
                     <svg width="14" height="14" aria-hidden="true" key={item}>
                       <use xlinkHref="#icon-full-star"></use>

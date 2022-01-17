@@ -2,13 +2,13 @@ import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
-import {fetchGuitarAction, fetchGuitarsAction, fetchSearchGuitarsAction} from '../../store/api-actions';
+import {fetchGuitarsAction, fetchSearchGuitarsAction} from '../../store/api-actions';
 import {Link, useHistory} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {GuitarsQuery} from '../../types/guitars-query';
-import {DEFAULT_QUERIES} from '../../utils/const';
-import {setSearchQueryParams} from '../../store/action';
+import {DEFAULT_QUERIES, DELAY_MS} from '../../utils/const';
+import {setQueryParams, setSearchQueryParams} from '../../store/action';
 import SelectList from '../select-list/select-list';
 import {
   getErrorGuitars,
@@ -32,38 +32,39 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
   onLoadGuitars(queryParams: GuitarsQuery) {
     dispatch(fetchGuitarsAction(queryParams));
   },
-  onClickGuitar(guitarId: number) {
-    dispatch(fetchGuitarAction(guitarId));
+  onSetSearchParams(queryParams: GuitarsQuery) {
+    dispatch(setSearchQueryParams(queryParams));
   },
   onSetParams(queryParams: GuitarsQuery) {
-    dispatch(setSearchQueryParams(queryParams));
+    dispatch(setQueryParams(queryParams));
   },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGuitars, onLoadGuitars, onSetParams}: PropsFromRedux): JSX.Element {
+function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, onSetSearchParams, onSetParams}: PropsFromRedux): JSX.Element {
 
   const history = useHistory();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchValue, setSearchValue] = useState('');
 
-  const debouncedSearchValue = useDebounce(searchValue, 500);
-
-  const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
-    const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...queries};
-
-    onSetParams(queryParams);
-    onLoadSearchGuitars(queryParams);
-
-  };
+  const debouncedSearchValue = useDebounce(searchValue, DELAY_MS);
 
   useEffect(() => {
+
+    const handleAddQueryParams = (queries: Partial<GuitarsQuery> = {}) => {
+      const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...queries};
+
+      onSetSearchParams(queryParams);
+      onLoadSearchGuitars(queryParams);
+
+    };
+
     if (debouncedSearchValue) {
       handleAddQueryParams({ nameLike: debouncedSearchValue } );
     }
-  }, [debouncedSearchValue]);
+  }, [debouncedSearchValue, onSetSearchParams, onLoadSearchGuitars]);
 
   const onSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,7 +73,10 @@ function Header({guitars, loading, error, params, onClickGuitar, onLoadSearchGui
       searchRef.current.value = '';
       setSearchValue(searchRef.current.value);
 
-      onLoadGuitars(params);
+      onSetParams({...DEFAULT_QUERIES});
+      onLoadGuitars({...DEFAULT_QUERIES, ...{ nameLike: debouncedSearchValue }});
+      history.push('/');
+
     } else {
       toast.configure();
       toast.info('Введите данные для поиска');

@@ -80,7 +80,7 @@ function Main(props: PropsFromRedux):JSX.Element {
 
   useEffect(() => {
     handleAddQueryParams();
-  }, []);
+  }, [onSetParams, onLoadGuitars]);
 
   const handleChangeSort = (newSelectedSort: string) => {
     handleAddQueryParams({ _sort: newSelectedSort });
