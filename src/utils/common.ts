@@ -60,7 +60,7 @@ export const addQueryParams = (query: Partial<GuitarsQuery>, location: H.Locatio
   const searchParams: GuitarsQuery = parseQueryParams(location);
   const newParams: GuitarsQuery = { ...searchParams, ...query };
 
-  if (Number(newParams.page) === 1 || (Number(newParams.page) > 1 && ((newParams.type?.length) || (newParams.stringCount?.length)))) {
+  if (Number(newParams.page) === 1) {
     const paramsWithoutPage: Partial<GuitarsQuery> = {...newParams};
     delete paramsWithoutPage.page;
     setQueryToUrl(stringify(paramsWithoutPage), location, history);

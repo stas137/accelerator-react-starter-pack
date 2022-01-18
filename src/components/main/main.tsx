@@ -63,8 +63,6 @@ function Main(props: PropsFromRedux):JSX.Element {
 
     const queryParams: GuitarsQuery = {...DEFAULT_QUERIES, ...addQueryParams(queries, location, history)};
 
-    //queryParams.page = Number(queryParams.page);
-
     if (typeof queryParams.type === 'string') {
       queryParams.type = [queryParams.type];
     }
