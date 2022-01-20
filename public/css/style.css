@@ -2407,8 +2407,8 @@ button,
   pointer-events: none;
 }
 
-.pagination__page--next a,
-.pagination__page--prev a {
+.pagination__page--next span,
+.pagination__page--prev span {
   padding: 2px 15px 2px 15px;
 }
 

@@ -1,4 +1,4 @@
-import {TYPES_GUITARS_DATA} from '../../utils/const';
+import {PRICE_FOR_TYPE, PRICE_MAX, PRICE_MIN, TYPES_GUITARS_DATA} from '../../utils/const';
 import {getNameTypeGuitar, getTypesForStringCount} from '../../utils/common';
 import {GuitarsQuery} from '../../types/guitars-query';
 
@@ -29,9 +29,26 @@ function TypesGuitars(props: TypesGuitarsProps): JSX.Element {
                 name={item}
                 checked={checked}
                 disabled={!enabledType.has(item)}
-                onChange={() => props.handleAddQueryParams({
-                  type: checked ? props.typesGuitars.filter((type) => type !== item) : [...props.typesGuitars, item],
-                })}
+                onChange={() => {
+                  const currentTypesGuitars = checked ? props.typesGuitars.filter((type) => type !== item) : [...props.typesGuitars, item];
+
+                  const priceForTypesGuitars = currentTypesGuitars.map((typeGuitar) => {
+                    for (const [key, value] of Object.entries(PRICE_FOR_TYPE)) {
+                      if (key === typeGuitar) {
+                        return value;
+                      }
+                    }
+                  });
+
+                  const minPrice = priceForTypesGuitars.length ? Math.min(...priceForTypesGuitars.map((priceItem) => Number(priceItem?.min))) : PRICE_MIN;
+                  const maxPrice = priceForTypesGuitars.length ? Math.max(...priceForTypesGuitars.map((priceItem) => Number(priceItem?.max))) : PRICE_MAX;
+
+                  props.handleAddQueryParams({
+                    type: currentTypesGuitars,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice,
+                  });
+                }}
               />
               <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
             </div>

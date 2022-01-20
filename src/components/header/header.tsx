@@ -12,14 +12,13 @@ import {setQueryParams, setSearchQueryParams} from '../../store/action';
 import SelectList from '../select-list/select-list';
 import {
   getErrorGuitars,
-  getGuitars,
   getLoadingGuitars,
-  getQueryParams
+  getQueryParams, getSortedGuitars
 } from '../../store/search-data/selectors';
 import useDebounce from '../../hooks/use-debounce';
 
 const mapStateToProps = (state: State) => ({
-  guitars: getGuitars(state),
+  guitars: getSortedGuitars(state),
   loading: getLoadingGuitars(state),
   error: getErrorGuitars(state),
   params: getQueryParams(state),
@@ -97,6 +96,14 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
     setSearchValue(e.target.value);
   };
 
+  const handleBlurInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue('');
+  };
+
+  const handleFocusInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
   return (
     <header className="header" id="header">
       <div className="container header__wrapper">
@@ -132,6 +139,8 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
               autoComplete="off"
               placeholder="что вы ищите?"
               onChange={handleChangeInput}
+              onBlur={handleBlurInput}
+              onFocus={handleFocusInput}
             />
             <label className="visually-hidden" htmlFor="search">Поиск</label>
           </form>

@@ -102,8 +102,8 @@ function Main(props: PropsFromRedux):JSX.Element {
             <h2 className="title title--bigger catalog-filter__title">Фильтр</h2>
 
             <PriceRange
-              minPrice={params.minPrice}
-              maxPrice={params.maxPrice}
+              minPrice={Number(params.minPrice)}
+              maxPrice={Number(params.maxPrice)}
               onChange={handleAddQueryParams}
             />
 

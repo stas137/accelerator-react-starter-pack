@@ -29,6 +29,12 @@ export const STRING_COUNT_FOR_TYPE = {
   'ukulele': ['4'],
 };
 
+export const PRICE_FOR_TYPE = {
+  'acoustic': {min: 1700, max: 14900},
+  'electric': {min: 14900, max: 35000},
+  'ukulele': {min: 1900, max: 6800},
+};
+
 export const START_PAGE = '1';
 export const PER_PAGE = 9;
 

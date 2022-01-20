@@ -3,6 +3,7 @@ import {stringify, parse} from 'query-string';
 import {RequestAdapterReturnType} from '../types/request-adapter';
 import {STRING_COUNT_FOR_TYPE, TYPE_FOR_STRING_COUNT} from './const';
 import * as H from 'history';
+import {GuitarsType, GuitarType} from '../types/guitars';
 
 export const convertPath = (path: string): string => {
   const pathParts = path.split('/');
@@ -115,3 +116,6 @@ export const getTypesForStringCount = (stringCount: string): string[] | undefine
 };
 
 export const getFillArrayFrom1toN = (n: number) => Array.from({length: n}, (_, index) => index + 1);
+
+const compareLowToHigh = (a: GuitarType, b: GuitarType): number => (a.name > b.name ? 1 : -1);
+export const sortedGuitars = (guitars: GuitarsType): GuitarsType => [...guitars].sort(compareLowToHigh);
