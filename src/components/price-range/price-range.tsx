@@ -29,7 +29,7 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
     } else {
       setMax(maxPriceLocal);
     }
-  }, [minPrice, maxPrice]);
+  }, [minPrice, maxPrice, minPriceLocal, maxPriceLocal]);
 
   const handleChangeInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {

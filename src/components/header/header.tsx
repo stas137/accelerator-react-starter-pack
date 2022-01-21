@@ -1,4 +1,4 @@
-import React, {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
