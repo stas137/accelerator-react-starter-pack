@@ -11,6 +11,14 @@ type SelectListType = {
 
 function SelectList({loading, error, searchValue, guitars, handleClickListItem}: SelectListType): JSX.Element {
 
+  /*const handleClickList = () => {
+    //handleClickListItem(id);
+    /!* eslint-disable no-console *!/
+    console.log('id');
+    /!* eslint-enable no-console *!/
+  };*/
+
+
   if (loading) {
     return (
       <ul className="form-search__select-list" data-testid="select-list-loading">
@@ -39,14 +47,14 @@ function SelectList({loading, error, searchValue, guitars, handleClickListItem}:
 
   if (searchValue.length !== 0) {
     return (
-      <ul className="form-search__select-list" data-testid="select-list" tabIndex={1}>
+      <ul className="form-search__select-list" data-testid="select-list" >
         {
           guitars.map((item) => (
             <li
               className="form-search__select-item"
-              tabIndex={2}
+              tabIndex={0}
               key={item.id}
-              onClick={() => handleClickListItem(item.id)}
+              onMouseDown={() => handleClickListItem(item.id)}
             >
               {item.name}
             </li>))

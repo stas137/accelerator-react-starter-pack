@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
@@ -47,6 +47,7 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
   const history = useHistory();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchValue, setSearchValue] = useState('');
+  const [keyTab, setKeyTab] = useState<'tab' | null>(null);
 
   const debouncedSearchValue = useDebounce(searchValue, DELAY_MS);
 
@@ -59,7 +60,6 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
 
       onSetSearchParams(queryParams);
       onLoadSearchGuitars(queryParams);
-
     };
 
     if (debouncedSearchValue) {
@@ -94,12 +94,22 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
     history.push(`/product/${guitarId}`);
   };
 
+  const handleBlurInput = (e: ChangeEvent<HTMLInputElement>) => {
+    if (keyTab !== 'tab') {
+      setSearchValue('');
+    } else {
+      setKeyTab(null);
+    }
+  };
+
   const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
 
-  const handleBlurInput = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue('');
+  const handleKeyDownInput = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab') {
+      setKeyTab('tab');
+    }
   };
 
   const handleFocusInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -140,9 +150,10 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
               type="text"
               autoComplete="off"
               placeholder="что вы ищите?"
-              onChange={handleChangeInput}
               onBlur={handleBlurInput}
               onFocus={handleFocusInput}
+              onKeyDown={handleKeyDownInput}
+              onChange={handleChangeInput}
             />
             <label className="visually-hidden" htmlFor="search">Поиск</label>
           </form>
