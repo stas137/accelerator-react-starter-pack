@@ -32,16 +32,19 @@ function TypesGuitars(props: TypesGuitarsProps): JSX.Element {
                 onChange={() => {
                   const currentTypesGuitars = checked ? props.typesGuitars.filter((type) => type !== item) : [...props.typesGuitars, item];
 
-                  const priceForTypesGuitars = currentTypesGuitars.map((typeGuitar) => {
-                    for (const [key, value] of Object.entries(PRICE_FOR_TYPE)) {
-                      if (key === typeGuitar) {
-                        return value;
+                  const priceForTypesGuitars: Array<{min: number, max: number}> = currentTypesGuitars.length
+                    ? currentTypesGuitars.map((typeGuitar) => {
+                      for (const [key, value] of Object.entries(PRICE_FOR_TYPE)) {
+                        if (key === typeGuitar) {
+                          return value;
+                        }
                       }
-                    }
-                  });
+                      return {min: PRICE_MAX, max: PRICE_MIN};
+                    })
+                    : [];
 
-                  const minPrice = priceForTypesGuitars.length ? Math.min(...priceForTypesGuitars.map((priceItem) => Number(priceItem?.min))) : PRICE_MIN;
-                  const maxPrice = priceForTypesGuitars.length ? Math.max(...priceForTypesGuitars.map((priceItem) => Number(priceItem?.max))) : PRICE_MAX;
+                  const minPrice = priceForTypesGuitars?.length ? Math.min(...priceForTypesGuitars.map((priceItem) => priceItem?.min)) : PRICE_MIN;
+                  const maxPrice = priceForTypesGuitars?.length ? Math.max(...priceForTypesGuitars.map((priceItem) => priceItem?.max)) : PRICE_MAX;
 
                   props.handleAddQueryParams({
                     type: currentTypesGuitars,

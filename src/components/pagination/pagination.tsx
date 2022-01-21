@@ -25,6 +25,7 @@ function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX
             <li className="pagination__page pagination__page--prev" id="prev">
               <span
                 className="link pagination__page-link"
+                tabIndex={0}
                 onClick={ () => {
                   handleSpanClick(Number(page) - 1);
                 }}
@@ -37,12 +38,12 @@ function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX
           pageNumber.map((item) => item === Number(page)
             ? (
               <li className="pagination__page pagination__page--active" key={item}>
-                <span className="link pagination__page-link" >{item}</span>
+                <span className="link pagination__page-link" tabIndex={0}>{item}</span>
               </li>
             )
             : (
               <li className="pagination__page" key={item}>
-                <span className="link pagination__page-link" onClick={() => handleSpanClick(item)}>{item}</span>
+                <span className="link pagination__page-link" tabIndex={0} onClick={() => handleSpanClick(item)}>{item}</span>
               </li>
             ))
         }
@@ -51,6 +52,7 @@ function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX
             <li className="pagination__page pagination__page--next" id="next">
               <span
                 className="link pagination__page-link"
+                tabIndex={0}
                 onClick={ () => {
                   handleSpanClick(Number(page) + 1);
                 }}
