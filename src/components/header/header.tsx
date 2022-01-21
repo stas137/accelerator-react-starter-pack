@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from 'react';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {ThunkAppDispatch} from '../../types/action';
@@ -49,6 +49,8 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
   const [searchValue, setSearchValue] = useState('');
 
   const debouncedSearchValue = useDebounce(searchValue, DELAY_MS);
+
+  const guitarsList = guitars.length ? guitars.filter((guitar) => guitar.name.toLocaleLowerCase().indexOf(debouncedSearchValue.toLocaleLowerCase()) === 0) : [];
 
   useEffect(() => {
 
@@ -149,7 +151,7 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
             loading={loading}
             error={error}
             searchValue={searchValue}
-            guitars={guitars}
+            guitars={guitarsList}
             handleClickListItem={handleClickListItem}
           />
 

@@ -11,26 +11,29 @@ type PriceRangeProps = {
 
 function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Element {
 
-  const [min, setMin] = useState<number>(Number(minPrice) || PRICE_MIN);
-  const [max, setMax] = useState<number>(Number(maxPrice) || PRICE_MAX);
+  const minPriceLocal = Number(minPrice) || PRICE_MIN;
+  const maxPriceLocal = Number(maxPrice) || PRICE_MAX;
+
+  const [min, setMin] = useState<number>(minPriceLocal);
+  const [max, setMax] = useState<number>(maxPriceLocal);
 
   useEffect(() => {
     if (minPrice) {
       setMin(minPrice);
     } else {
-      setMin(PRICE_MIN);
+      setMin(minPriceLocal);
     }
 
     if (maxPrice) {
       setMax(maxPrice);
     } else {
-      setMax(PRICE_MAX);
+      setMax(maxPriceLocal);
     }
   }, [minPrice, maxPrice]);
 
   const handleChangeInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
-      setMin(PRICE_MIN);
+      setMin(minPriceLocal);
     } else {
       setMin(Number(e.target.value));
     }
@@ -38,7 +41,7 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
 
   const handleChangeInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === ''){
-      setMax(PRICE_MAX);
+      setMax(maxPriceLocal);
     } else {
       setMax(Number(e.target.value));
     }
@@ -47,8 +50,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
   const handleBlurInputPriceMin = (e: ChangeEvent<HTMLInputElement>) => {
     let price = Number(e.target.value);
 
-    if (price < PRICE_MIN || price > PRICE_MAX) {
-      price = PRICE_MIN;
+    if (price < minPriceLocal || price > maxPriceLocal) {
+      price = minPriceLocal;
     }
 
     setMin(price);
@@ -58,8 +61,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
   const handleBlurInputPriceMax = (e: ChangeEvent<HTMLInputElement>) => {
     let price = Number(e.target.value);
 
-    if (price > PRICE_MAX || !price || price < 0 || price < min) {
-      price = PRICE_MAX;
+    if (price > maxPriceLocal || !price || price < 0 || price < min) {
+      price = maxPriceLocal;
     }
     setMax(price);
     onChange({ minPrice: min, maxPrice: price} );
@@ -73,8 +76,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
           <label className="visually-hidden">Минимальная цена</label>
           <input
             type="number"
-            value={min === PRICE_MIN ? '' : min}
-            placeholder={PRICE_MIN.toString()}
+            value={min === minPriceLocal ? '' : min}
+            placeholder={minPriceLocal.toString()}
             id="priceMin"
             name="от"
             onBlur={handleBlurInputPriceMin}
@@ -85,8 +88,8 @@ function PriceRange({minPrice, maxPrice, onChange}: PriceRangeProps): JSX.Elemen
           <label className="visually-hidden">Максимальная цена</label>
           <input
             type="number"
-            value={max === PRICE_MAX ? '' : max}
-            placeholder={PRICE_MAX.toString()}
+            value={max === maxPriceLocal ? '' : max}
+            placeholder={maxPriceLocal.toString()}
             id="priceMax"
             name="до"
             onBlur={handleBlurInputPriceMax}

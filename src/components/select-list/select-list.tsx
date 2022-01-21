@@ -39,12 +39,12 @@ function SelectList({loading, error, searchValue, guitars, handleClickListItem}:
 
   if (searchValue.length !== 0) {
     return (
-      <ul className="form-search__select-list" data-testid="select-list">
+      <ul className="form-search__select-list" data-testid="select-list" tabIndex={1}>
         {
           guitars.map((item) => (
             <li
               className="form-search__select-item"
-              tabIndex={0}
+              tabIndex={2}
               key={item.id}
               onClick={() => handleClickListItem(item.id)}
             >
