@@ -1,14 +1,15 @@
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
-import Review from '../review/review';
 import {useParams} from 'react-router-dom';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {ThunkAppDispatch} from '../../types/action';
 import {fetchGuitarAction} from '../../store/api-actions';
 import {getGuitar} from '../../store/book-process/selectors';
 import {Link} from 'react-router-dom';
 import {RATING_MAX} from '../../utils/const';
+import {Tabs} from '../tabs/tabs';
+import {Reviews} from '../reviews/reviews';
 
 const mapStateToProps = (state: State) => ({
   guitar: getGuitar(state),
@@ -29,14 +30,24 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
 
   const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
 
+  const [indexTab, setIndexTab] = useState<number>(0);
+
   useEffect(() => {
     onLoadGuitar(Number(id));
   }, [id, onLoadGuitar]);
 
+  const handlerChangeTab = (tab: string) => {
+    if (tab === 'characteristic') {
+      setIndexTab(0);
+    } else {
+      setIndexTab(1);
+    }
+  };
+
   return (
     <main className="page-content">
       <div className="container">
-        <h1 className="page-content__title title title--bigger">Товар</h1>
+        <h1 className="page-content__title title title--bigger">{guitar.name}</h1>
 
         {
           <ul className="breadcrumbs page-content__breadcrumbs">
@@ -47,7 +58,7 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
               <Link className="link" to="/">Каталог</Link>
             </li>
             <li className="breadcrumbs__item" key={'product'}>
-              <Link className="link" to="#">Товар</Link>
+              <Link className="link" to="#">{guitar.name}</Link>
             </li>
           </ul>
         }
@@ -75,31 +86,13 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
               <span className="rate__count">{guitar.comments.length}</span>
               <span className="rate__message"></span>
             </div>
-            <div className="tabs">
-              <a className="button button--medium tabs__button" href="#characteristics">Характеристики</a>
-              <a className="button button--black-border button--medium tabs__button" href="#description">Описание</a>
-              <div className="tabs__content" id="characteristics">
-                <table className="tabs__table">
-                  <tbody>
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Артикул:</td>
-                      <td className="tabs__value">{guitar.vendorCode}</td>
-                    </tr>
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Тип:</td>
-                      <td className="tabs__value">{guitar.type}</td>
-                    </tr>
-                    <tr className="tabs__table-row">
-                      <td className="tabs__title">Количество струн:</td>
-                      <td className="tabs__value">{guitar.stringCount}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p className="tabs__product-description hidden">
-                  {guitar.description}
-                </p>
-              </div>
-            </div>
+
+            <Tabs
+              guitar={guitar}
+              indexTab={indexTab}
+              handlerChangeTab={handlerChangeTab}
+            />
+
           </div>
           <div className="product-container__price-wrapper">
             <p className="product-container__price-info product-container__price-info--title">Цена:</p>
@@ -107,17 +100,11 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
             <Link className="button button--red button--big product-container__button" to="/#">Добавить в корзину</Link>
           </div>
         </div>
-        <section className="reviews">
-          <h3 className="reviews__title title title--bigger">Отзывы</h3>
-          <Link className="button button--red-border button--big reviews__sumbit-button" to="/#">Оставить отзыв</Link>
 
-          {
-            guitar.comments.map((comment) => <Review key={comment.id} comment={comment} />)
-          }
+        <Reviews
+          guitar={guitar}
+        />
 
-          <button className="button button--medium reviews__more-button">Показать еще отзывы</button>
-          <a className="button button--up button--red-border button--big reviews__up-button" href="#header">Наверх</a>
-        </section>
       </div>
     </main>
   );

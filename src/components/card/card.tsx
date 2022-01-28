@@ -1,6 +1,6 @@
 import {GuitarType} from '../../types/guitars';
 import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {RATING_MAX} from '../../utils/const';
 
 type CardPropsType = {
@@ -10,6 +10,7 @@ type CardPropsType = {
 function Card({guitar}: CardPropsType):JSX.Element {
 
   const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
+  const history = useHistory();
 
   return (
     <div className="product-card">
@@ -40,7 +41,7 @@ function Card({guitar}: CardPropsType):JSX.Element {
         </p>
       </div>
       <div className="product-card__buttons">
-        <Link className="button button--mini" to="/#">Подробнее</Link>
+        <span className="button button--mini" onClick={() => history.push(`/product/${guitar.id}`)}>Подробнее</span>
         <Link className="button button--red button--mini button--add-to-cart" to="/#">Купить</Link>
       </div>
     </div>

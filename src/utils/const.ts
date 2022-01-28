@@ -1,5 +1,6 @@
 export enum APIRoute {
   Guitars = '/guitars',
+  Comments = '/comments',
 }
 
 export enum AppRoute {
@@ -14,7 +15,8 @@ export const PRICE_MIN = 1700;
 export const PRICE_MAX = 35000;
 export const STRING_COUNTS_DATA = ['4', '6', '7', '12'];
 export const TYPES_GUITARS_DATA = ['acoustic', 'electric', 'ukulele'];
-export const LIST_OPTIONS =  ['price', 'rating'];
+export const LIST_OPTIONS = ['price', 'rating'];
+export const REVIEWS_COUNT = 3;
 
 export const TYPE_FOR_STRING_COUNT = {
   '4': ['electric', 'ukulele'],
@@ -34,6 +36,8 @@ export const PRICE_FOR_TYPE = {
   'electric': {min: 14900, max: 35000},
   'ukulele': {min: 1900, max: 6800},
 };
+
+export const RATING_NAME = ['Ужасно', 'Плохо', 'Нормально', 'Хорошо', 'Отлично'];
 
 export const START_PAGE = '1';
 export const PER_PAGE = 9;

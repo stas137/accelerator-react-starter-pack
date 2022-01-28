@@ -11,14 +11,6 @@ type SelectListType = {
 
 function SelectList({loading, error, searchValue, guitars, handleClickListItem}: SelectListType): JSX.Element {
 
-  /*const handleClickList = () => {
-    //handleClickListItem(id);
-    /!* eslint-disable no-console *!/
-    console.log('id');
-    /!* eslint-enable no-console *!/
-  };*/
-
-
   if (loading) {
     return (
       <ul className="form-search__select-list" data-testid="select-list-loading">

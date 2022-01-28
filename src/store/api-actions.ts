@@ -8,7 +8,7 @@ import {
   redirectToRoute
 } from './action';
 import {APIRoute, AppRoute} from '../utils/const';
-import {GuitarsType, GuitarType} from '../types/guitars';
+import {CommentType, GuitarsType, GuitarType} from '../types/guitars';
 import {GuitarsQuery} from '../types/guitars-query';
 import {guitarRequestAdapter} from '../utils/common';
 
@@ -47,6 +47,21 @@ export const fetchGuitarAction = (guitarId: number): ThunkActionResult =>
       const {data} = await api.get<GuitarType>(`${APIRoute.Guitars}/${guitarId}?_embed=comments`);
 
       dispatch(loadGuitar(data));
+
+    } catch {
+      dispatch(redirectToRoute(AppRoute.NotFound));
+    }
+  };
+
+export const fetchGuitarCommentAction = (userName: string, advantage: string, disadvantage: string, comment: string, rating: number, guitarId: number): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    try {
+      const response = await api.post<CommentType>(`${APIRoute.Comments}`, {userName, advantage, disadvantage, comment, rating, guitarId});
+
+      if (response.data) {
+        const {data} = await api.get<GuitarType>(`${APIRoute.Guitars}/${guitarId}?_embed=comments`);
+        dispatch(loadGuitar(data));
+      }
 
     } catch {
       dispatch(redirectToRoute(AppRoute.NotFound));

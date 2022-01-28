@@ -1,9 +1,9 @@
 import {GuitarsQuery} from '../types/guitars-query';
 import {stringify, parse} from 'query-string';
 import {RequestAdapterReturnType} from '../types/request-adapter';
-import {STRING_COUNT_FOR_TYPE, TYPE_FOR_STRING_COUNT} from './const';
+import {RATING_NAME, STRING_COUNT_FOR_TYPE, TYPE_FOR_STRING_COUNT} from './const';
 import * as H from 'history';
-import {GuitarsType, GuitarType} from '../types/guitars';
+import {CommentsType, CommentType, GuitarsType, GuitarType} from '../types/guitars';
 
 export const convertPath = (path: string): string => {
   const pathParts = path.split('/');
@@ -119,3 +119,8 @@ export const getFillArrayFrom1toN = (n: number) => Array.from({length: n}, (_, i
 
 const compareLowToHigh = (a: GuitarType, b: GuitarType): number => (a.name > b.name ? 1 : -1);
 export const sortedGuitars = (guitars: GuitarsType): GuitarsType => [...guitars].sort(compareLowToHigh);
+
+const compareDateHighToLow = (a: CommentType, b: CommentType): number => (new Date(a.createAt) > new Date(b.createAt) ? -1 : 1);
+export const getSortedGuitarsComments = (comments: CommentsType) => [...comments].sort(compareDateHighToLow);
+
+export const getNameRating = (item: number): string => RATING_NAME[item-1];

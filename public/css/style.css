@@ -1126,7 +1126,7 @@ button,
   flex-grow: 1;
   justify-content: start;
 
-  padding-top: 20px;
+  padding-top: 60px;
 }
 
 .modal__button-container .modal__button {
@@ -2743,6 +2743,7 @@ button,
   right: 0;
   bottom: -51px;
   position: absolute;
+  z-index: 1;
 }
 
 .review {
