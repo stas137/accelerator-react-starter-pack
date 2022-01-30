@@ -1,4 +1,4 @@
-import {getFillArrayFrom1toN} from '../../utils/common';
+import {getRange} from '../../utils/common';
 
 type PaginationProps = {
   page: string,
@@ -11,7 +11,7 @@ function Pagination({page, perPage, totalCount, onChange}: PaginationProps): JSX
 
 
   const pageCount = Math.ceil(totalCount / perPage);
-  const pageNumber = getFillArrayFrom1toN(pageCount);
+  const pageNumber = getRange(pageCount);
 
   const handleSpanClick = (currentPage: number) => {
     onChange(String(currentPage));

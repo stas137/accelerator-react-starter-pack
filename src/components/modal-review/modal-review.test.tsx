@@ -46,7 +46,7 @@ describe('Component: ModalReview', () => {
           setShowModalThanks={jest.fn}
         />
       </Provider>,
-      );
+    );
 
     expect(screen.getByText('Оставить отзыв')).toBeInTheDocument();
     expect(screen.getByText('Отправить отзыв')).toBeInTheDocument();

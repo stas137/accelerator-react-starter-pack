@@ -115,12 +115,12 @@ export const getTypesForStringCount = (stringCount: string): string[] | undefine
   }
 };
 
-export const getFillArrayFrom1toN = (n: number) => Array.from({length: n}, (_, index) => index + 1);
+export const getRange = (n: number) => Array.from({length: n}, (_, index) => index + 1);
 
 const compareLowToHigh = (a: GuitarType, b: GuitarType): number => (a.name > b.name ? 1 : -1);
 export const sortedGuitars = (guitars: GuitarsType): GuitarsType => [...guitars].sort(compareLowToHigh);
 
-const compareDateHighToLow = (a: CommentType, b: CommentType): number => (new Date(a.createAt) > new Date(b.createAt) ? -1 : 1);
+const compareDateHighToLow = (a: CommentType, b: CommentType): number => ((new Date(b.createAt)).getTime() - (new Date(a.createAt)).getTime());
 export const getSortedGuitarsComments = (comments: CommentsType) => [...comments].sort(compareDateHighToLow);
 
 export const getNameRating = (item: number): string => RATING_NAME[item-1];

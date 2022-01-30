@@ -1,18 +1,17 @@
 import {render, screen} from '@testing-library/react';
 import {makeFakeGuitar} from '../../utils/mock';
-import {Tabs} from './tabs';
+import {TabContent} from './tab-content';
 
 const mockGuitar = makeFakeGuitar();
 
-describe('Component: Tabs', () => {
+describe('Component: TabContent', () => {
 
   it('should render correctly', () => {
 
     render(
-      <Tabs
+      <TabContent
         guitar={mockGuitar}
-        currentIndexTab={0}
-        handlerChangeTab={jest.fn}
+        indexTab={0}
       />);
 
     expect(screen.getByText(mockGuitar.vendorCode)).toBeInTheDocument();

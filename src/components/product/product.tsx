@@ -1,6 +1,6 @@
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
-import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
+import {convertPath, getRange} from '../../utils/common';
 import {useParams} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {ThunkAppDispatch} from '../../types/action';
@@ -28,7 +28,7 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
 
   const { id } = useParams<{ id?: string }>();
 
-  const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
+  const arrayForRating = getRange(RATING_MAX);
 
   const [indexTab, setIndexTab] = useState<number>(0);
 
@@ -37,10 +37,16 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
   }, [id, onLoadGuitar]);
 
   const handlerChangeTab = (tab: string) => {
-    if (tab === 'characteristic') {
-      setIndexTab(0);
-    } else {
-      setIndexTab(1);
+    switch (tab) {
+      case 'characteristics':
+        setIndexTab(0);
+        break;
+      case 'description':
+        setIndexTab(1);
+        break;
+      default:
+        setIndexTab(0);
+        break;
     }
   };
 
@@ -89,7 +95,7 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
 
             <Tabs
               guitar={guitar}
-              indexTab={indexTab}
+              currentIndexTab={indexTab}
               handlerChangeTab={handlerChangeTab}
             />
 

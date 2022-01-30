@@ -1,5 +1,6 @@
 import {CommentType} from '../../types/guitars';
 import {getMonthName} from '../../utils/get-month-name';
+import {useMemo} from 'react';
 
 type ReviewPropsType = {
   comment: CommentType,
@@ -7,11 +8,13 @@ type ReviewPropsType = {
 
 function Review({comment}: ReviewPropsType):JSX.Element {
 
+  const commentDate = useMemo(() => new Date(comment.createAt), [comment.createAt]);
+
   return (
     <div className="review">
       <div className="review__wrapper">
         <h4 className="review__title review__title--author title title--lesser">{comment.userName}</h4>
-        <span className="review__date">{`${new Date(comment.createAt).getDate()} ${getMonthName(new Date(comment.createAt).getMonth())}`}</span>
+        <span className="review__date">{`${commentDate.getDate()} ${getMonthName(commentDate.getMonth())}`}</span>
       </div>
       <div className="rate review__rating-panel" aria-hidden="true">
         <span className="visually-hidden">Рейтинг:</span>

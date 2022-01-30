@@ -1,4 +1,5 @@
 import {MouseEvent, KeyboardEvent} from 'react';
+import {MODAL_THANKS_HEIGHT, MODAL_THANKS_MARGIN_BOTTOM, MODAL_THANKS_WIDTH} from '../../utils/const';
 
 type ModalThanksProps = {
   setShowModalThanks: (flag: boolean) => void,
@@ -24,7 +25,7 @@ function ModalThanks({setShowModalThanks}: ModalThanksProps): JSX.Element {
   };
 
   return (
-    <div style={{position: 'relative', width: 550, height: 410, marginBottom: 50}}>
+    <div style={{position: 'relative', width: MODAL_THANKS_WIDTH, height: MODAL_THANKS_HEIGHT, marginBottom: MODAL_THANKS_MARGIN_BOTTOM}}>
       <div className="modal is-active modal--success modal-for-ui-kit">
         <div className="modal__wrapper">
           <div className="modal__overlay" data-close-modal onClick={handlerClickModalOverlay}></div>

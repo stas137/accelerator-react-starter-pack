@@ -1,8 +1,8 @@
 import React from 'react';
 import {GuitarType} from '../../types/guitars';
 import {FormEvent, MouseEvent, KeyboardEvent, useState} from 'react';
-import {getFillArrayFrom1toN, getNameRating} from '../../utils/common';
-import {RATING_MAX} from '../../utils/const';
+import {getRange, getNameRating} from '../../utils/common';
+import {MODAL_REVIEW_HEIGHT, MODAL_REVIEW_MARGIN_BOTTOM, MODAL_REVIEW_WIDTH, RATING_MAX} from '../../utils/const';
 import {ThunkAppDispatch} from '../../types/action';
 import {fetchGuitarCommentAction} from '../../store/api-actions';
 import {connect, ConnectedProps} from 'react-redux';
@@ -30,7 +30,7 @@ function ModalReview({guitar, setShowModalReview, setShowModalThanks, onSendGuit
   const [disadvantage, setDisadvantage] = useState<string>('');
   const [comment, setComment] = useState<string>('');
 
-  const arrayForRating = getFillArrayFrom1toN(RATING_MAX).reverse();
+  const arrayForRating = getRange(RATING_MAX).reverse();
 
   const handlerSubmitButton = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -59,7 +59,7 @@ function ModalReview({guitar, setShowModalReview, setShowModalThanks, onSendGuit
   };
 
   return (
-    <div style={{position: 'relative', width: 550, height: 610, marginBottom: 50}}>
+    <div style={{position: 'relative', width: MODAL_REVIEW_WIDTH, height: MODAL_REVIEW_HEIGHT, marginBottom: MODAL_REVIEW_MARGIN_BOTTOM}}>
       <div className="modal is-active modal--review modal-for-ui-kit">
         <div className="modal__wrapper">
           <div className="modal__overlay" data-close-modal onClick={handlerClickModalOverlay}></div>

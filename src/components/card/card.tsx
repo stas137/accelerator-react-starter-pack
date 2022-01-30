@@ -1,5 +1,5 @@
 import {GuitarType} from '../../types/guitars';
-import {convertPath, getFillArrayFrom1toN} from '../../utils/common';
+import {convertPath, getRange} from '../../utils/common';
 import {Link, useHistory} from 'react-router-dom';
 import {RATING_MAX} from '../../utils/const';
 
@@ -9,7 +9,7 @@ type CardPropsType = {
 
 function Card({guitar}: CardPropsType):JSX.Element {
 
-  const arrayForRating = getFillArrayFrom1toN(RATING_MAX);
+  const arrayForRating = getRange(RATING_MAX);
   const history = useHistory();
 
   return (

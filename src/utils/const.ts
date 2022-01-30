@@ -49,3 +49,11 @@ export const DEFAULT_QUERIES = {
   stringCount: [],
   comments: true,
 };
+
+export const MODAL_REVIEW_HEIGHT = 610;
+export const MODAL_REVIEW_WIDTH = 550;
+export const MODAL_REVIEW_MARGIN_BOTTOM = 50;
+
+export const MODAL_THANKS_HEIGHT = 410;
+export const MODAL_THANKS_WIDTH = 550;
+export const MODAL_THANKS_MARGIN_BOTTOM = 50;
