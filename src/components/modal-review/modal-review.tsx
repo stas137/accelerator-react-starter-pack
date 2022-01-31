@@ -29,15 +29,21 @@ function ModalReview({guitar, setShowModalReview, setShowModalThanks, onSendGuit
   const [advantage, setAdvantage] = useState<string>('');
   const [disadvantage, setDisadvantage] = useState<string>('');
   const [comment, setComment] = useState<string>('');
+  const [submitForm, setSubmitForm] = useState<boolean>(false);
 
   const arrayForRating = getRange(RATING_MAX).reverse();
 
   const handlerSubmitButton = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     if (userName.trim().length && reviewRating) {
-      onSendGuitarComment(userName, advantage, disadvantage, comment, reviewRating, guitar.id);
+
+      onSendGuitarComment(userName, advantage.length ? advantage : ' ', disadvantage.length ? disadvantage : ' ', comment.length ? comment : ' ', reviewRating, guitar.id);
+
       setShowModalReview(false);
       setShowModalThanks(true);
+      setSubmitForm(false);
+    } else {
+      setSubmitForm(true);
     }
   };
 
@@ -81,7 +87,7 @@ function ModalReview({guitar, setShowModalReview, setShowModalThanks, onSendGuit
                     tabIndex={0}
                   />
                   {
-                    userName.trim().length
+                    !submitForm || userName.trim().length
                       ? <span className="form-review__warning">&nbsp;</span>
                       : <span className="form-review__warning">Заполните поле</span>
                   }
@@ -105,7 +111,7 @@ function ModalReview({guitar, setShowModalReview, setShowModalThanks, onSendGuit
                     <span className="rate__count"></span>
 
                     {
-                      reviewRating
+                      !submitForm || reviewRating
                         ? <span className="rate__message">&nbsp;</span>
                         : <span className="rate__message">Поставьте оценку</span>
                     }
