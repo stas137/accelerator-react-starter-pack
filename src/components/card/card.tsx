@@ -1,13 +1,24 @@
 import {GuitarType} from '../../types/guitars';
 import {convertPath, getRange} from '../../utils/common';
-import {Link, useHistory} from 'react-router-dom';
 import {RATING_MAX} from '../../utils/const';
+import {useHistory} from 'react-router-dom';
+import { connect, ConnectedProps } from 'react-redux';
+import { getCartGuitars } from '../../store/cart-process/selectors';
+import { State } from '../../types/state';
+
+const mapStateToProps = (state: State) => ({
+  cartGuitars: getCartGuitars(state),
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type CardPropsType = {
   guitar: GuitarType,
+  handleClickAddCard: (guitar: GuitarType, showModalAddCard: boolean) => void;
 }
 
-function Card({guitar}: CardPropsType):JSX.Element {
+function Card({ guitar, cartGuitars, handleClickAddCard }: CardPropsType & PropsFromRedux):JSX.Element {
 
   const arrayForRating = getRange(RATING_MAX);
   const history = useHistory();
@@ -42,10 +53,20 @@ function Card({guitar}: CardPropsType):JSX.Element {
       </div>
       <div className="product-card__buttons">
         <span className="button button--mini" onClick={() => history.push(`/product/${guitar.id}`)}>Подробнее</span>
-        <Link className="button button--red button--mini button--add-to-cart" to="/#">Купить</Link>
+        {
+          cartGuitars.find((item) => item.vendorCode === guitar.vendorCode)
+            ? (
+              <span className="button button--red-border button--mini button--in-cart" >В Корзине</span>
+            )
+            : (
+              <span className="button button--red button--mini button--add-to-cart" onClick={ () => {handleClickAddCard(guitar, true);} }>
+                Купить
+              </span>
+            )
+        }
       </div>
     </div>
   );
 }
 
-export default Card;
+export default connector(Card);

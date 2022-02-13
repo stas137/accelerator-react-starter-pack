@@ -47,7 +47,6 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-
 function Main(props: PropsFromRedux):JSX.Element {
 
   const {guitars, total, loading, error, onLoadGuitars, params, onSetParams} = props;

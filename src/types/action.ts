@@ -12,7 +12,11 @@ import {
   changeCurrentPage,
   redirectToRoute,
   setQueryParams,
-  setSearchQueryParams
+  setSearchQueryParams,
+  cartAddGuitar,
+  cartSubGuitar,
+  cartDelGuitar,
+  cartSetCountGuitar
 } from '../store/action';
 import {ThunkAction, ThunkDispatch} from '@reduxjs/toolkit';
 import {AxiosInstance} from 'axios';
@@ -32,7 +36,11 @@ export enum ActionType {
   RedirectToRoute = 'main/redirectToRoute',
   ChangeCurrentPage = 'main/currentPage',
   SetQueryParams = 'main/setQueryParams',
-  SetSearchQueryParams = 'main/setSearchQueryParams'
+  SetSearchQueryParams = 'main/setSearchQueryParams',
+  CartAddGuitar = 'main/cartAddGuitar',
+  CartSubGuitar = 'main/cartSubGuitar',
+  CartDelGuitar = 'main/cartDelGuitar',
+  CartSetCountGuitar = 'main/cartSetCountGuitar'
 }
 
 export type Actions =
@@ -49,7 +57,11 @@ export type Actions =
   | ReturnType<typeof changeCurrentPage>
   | ReturnType<typeof redirectToRoute>
   | ReturnType<typeof setQueryParams>
-  | ReturnType<typeof setSearchQueryParams>;
+  | ReturnType<typeof setSearchQueryParams>
+  | ReturnType<typeof cartAddGuitar>
+  | ReturnType<typeof cartSubGuitar>
+  | ReturnType<typeof cartDelGuitar>
+  | ReturnType<typeof cartSetCountGuitar>;
 
 export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
 export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;

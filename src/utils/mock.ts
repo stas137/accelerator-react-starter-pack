@@ -1,5 +1,5 @@
 import {commerce, datatype, internet, name} from 'faker';
-import {CommentType, GuitarsType, GuitarType} from '../types/guitars';
+import { CartType, CommentType, GuitarsType, GuitarType } from '../types/guitars';
 import {GuitarsQuery} from '../types/guitars-query';
 
 export const makeFakeGuitar = (): GuitarType => ({
@@ -15,7 +15,22 @@ export const makeFakeGuitar = (): GuitarType => ({
   comments: [],
 });
 
+export const makeFakeCartGuitar = (): CartType => ({
+  id: datatype.number(),
+  name: name.title(),
+  vendorCode: datatype.string(),
+  type: datatype.string(),
+  description: commerce.productDescription(),
+  previewImg: internet.avatar(),
+  stringCount: datatype.number(),
+  rating: datatype.number(),
+  price: datatype.number(),
+  comments: [],
+  count: 1,
+});
+
 export const makeFakeGuitars = (): GuitarsType => new Array(5).fill(null).map((item) => makeFakeGuitar());
+export const makeFakeCartGuitars = (): CartType[] => new Array(5).fill(null).map((item) => makeFakeCartGuitar());
 
 export const makeFakeQueryParams = (): GuitarsQuery => ({
   page: datatype.string(),

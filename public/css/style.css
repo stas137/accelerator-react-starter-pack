@@ -1059,13 +1059,14 @@ button,
 }
 
 .modal__img {
+  margin: 0 !important;
   display: block;
 
-  width: 55px;
-  height: 137px;
+  width: 55px !important;
+  height: 137px !important;
 
-  -o-object-fit: contain;
-     object-fit: contain;
+  -o-object-fit: contain !important;
+     object-fit: contain !important;
 }
 
 .modal__icon {

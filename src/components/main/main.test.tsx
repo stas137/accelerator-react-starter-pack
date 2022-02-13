@@ -5,8 +5,10 @@ import {Route, Router} from 'react-router-dom';
 import {AppRoute, DEFAULT_QUERIES} from '../../utils/const';
 import {Provider} from 'react-redux';
 import {
+  makeFakeCartGuitars,
   makeFakeGuitar,
-  makeFakeGuitars, makeFakeTotal
+  makeFakeGuitars,
+  makeFakeTotal
 } from '../../utils/mock';
 import Main from './main';
 import {State} from '../../types/state';
@@ -36,6 +38,9 @@ const store = mockStore({
     loading: false,
     error: false,
     params: DEFAULT_QUERIES,
+  },
+  CART: {
+    guitars: makeFakeCartGuitars(),
   },
 });
 

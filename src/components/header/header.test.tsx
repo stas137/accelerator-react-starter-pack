@@ -5,6 +5,7 @@ import {Router} from 'react-router-dom';
 import {DEFAULT_QUERIES} from '../../utils/const';
 import {Provider} from 'react-redux';
 import {
+  makeFakeCartGuitars,
   makeFakeGuitar,
   makeFakeGuitars, makeFakeTotal
 } from '../../utils/mock';
@@ -37,8 +38,10 @@ const store = mockStore({
     error: false,
     params: DEFAULT_QUERIES,
   },
+  CART: {
+    guitars: makeFakeCartGuitars(),
+  },
 });
-
 
 describe('Component: Header', () => {
 

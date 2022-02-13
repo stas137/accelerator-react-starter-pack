@@ -16,9 +16,11 @@ import {
   getQueryParams, getSortedGuitars
 } from '../../store/search-data/selectors';
 import useDebounce from '../../hooks/use-debounce';
+import { getCartGuitars } from '../../store/cart-process/selectors';
 
 const mapStateToProps = (state: State) => ({
   guitars: getSortedGuitars(state),
+  cartGuitars: getCartGuitars(state),
   loading: getLoadingGuitars(state),
   error: getErrorGuitars(state),
   params: getQueryParams(state),
@@ -42,7 +44,7 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, onSetSearchParams, onSetParams}: PropsFromRedux): JSX.Element {
+function Header({guitars, cartGuitars, loading, error, onLoadSearchGuitars, onLoadGuitars, onSetSearchParams, onSetParams}: PropsFromRedux): JSX.Element {
 
   const history = useHistory();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -128,7 +130,7 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
               <Link className="link main-nav__link link--current" to="/">Каталог</Link>
             </li>
             <li>
-              <Link className="link main-nav__link" to="/#">Где купить?</Link>
+              <Link className="link main-nav__link" to="/">Где купить?</Link>
             </li>
             <li>
               <Link className="link main-nav__link" to="/#">О компании</Link>
@@ -166,14 +168,21 @@ function Header({guitars, loading, error, onLoadSearchGuitars, onLoadGuitars, on
             handleClickListItem={handleClickListItem}
           />
 
-
         </div>
-        <Link className="header__cart-link" to="/#" aria-label="Корзина">
+        <Link className="header__cart-link" to="/cart" aria-label="Корзина">
           <svg className="header__cart-icon" width="14" height="14" aria-hidden="true">
             <use xlinkHref="#icon-basket"></use>
           </svg>
           <span className="visually-hidden">Перейти в корзину</span>
-          <span className="header__cart-count">2</span>
+
+          {
+            cartGuitars.length
+              ? (
+                <span className="header__cart-count">{cartGuitars.reduce((sum, item) => sum + item.count, 0)}</span>
+              )
+              : null
+          }
+
         </Link>
       </div>
     </header>

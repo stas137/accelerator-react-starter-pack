@@ -44,5 +44,13 @@ export type BookProcess = {
   guitar: GuitarType,
 };
 
+export type CartType = GuitarType & {
+  count: number,
+};
+
+export type CardProcess = {
+  guitars: CartType[],
+};
+
 export type GuitarsType = GuitarType[];
 export type CommentsType = CommentType[];

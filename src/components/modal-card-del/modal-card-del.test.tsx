@@ -1,6 +1,11 @@
 import {render, screen} from '@testing-library/react';
-import { makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal } from '../../utils/mock';
-import Card from './card';
+import {
+  makeFakeCartGuitar,
+  makeFakeCartGuitars,
+  makeFakeGuitar,
+  makeFakeGuitars,
+  makeFakeTotal
+} from '../../utils/mock';
 import thunk from 'redux-thunk';
 import { api } from '../../services/api';
 import { configureMockStore } from '@jedmao/redux-mock-store';
@@ -8,6 +13,7 @@ import { State } from '../../types/state';
 import { AnyAction } from 'redux';
 import { DEFAULT_QUERIES } from '../../utils/const';
 import { Provider } from 'react-redux';
+import ModalCardDel from './modal-card-del';
 
 const middlewares = [thunk.withExtraArgument(api)];
 const mockStore = configureMockStore<State, AnyAction>(middlewares);
@@ -35,23 +41,22 @@ const store = mockStore({
   },
 });
 
-const mockGuitar = makeFakeGuitar();
+const mockGuitar = makeFakeCartGuitar();
 
-describe('Component: Card', () => {
+describe('Component: ModalCardDel', () => {
 
   it('should render correctly', () => {
 
     render(
       <Provider store={store}>
-        <Card
+        <ModalCardDel
           guitar={mockGuitar}
-          handleClickAddCard={jest.fn()}
+          setShowModalCardDel={jest.fn}
         />
-      </Provider>,
-    );
+      </Provider>);
 
-    expect(screen.getByText(mockGuitar.name)).toBeInTheDocument();
-    expect(screen.getByText('Подробнее')).toBeInTheDocument();
+    expect(screen.getByText('Удалить этот товар?')).toBeInTheDocument();
+
   });
 
 });

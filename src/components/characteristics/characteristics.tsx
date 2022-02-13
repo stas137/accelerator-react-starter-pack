@@ -1,4 +1,5 @@
-import {GuitarType} from '../../types/guitars';
+import { GuitarType } from '../../types/guitars';
+import { getNameTypeGuitar } from '../../utils/common';
 
 type CharacteristicsProps = {
   guitar: GuitarType,
@@ -15,7 +16,7 @@ function Characteristics({guitar}: CharacteristicsProps):JSX.Element {
           </tr>
           <tr className="tabs__table-row">
             <td className="tabs__title">Тип:</td>
-            <td className="tabs__value">{guitar.type}</td>
+            <td className="tabs__value">{getNameTypeGuitar(guitar.type)}</td>
           </tr>
           <tr className="tabs__table-row">
             <td className="tabs__title">Количество струн:</td>

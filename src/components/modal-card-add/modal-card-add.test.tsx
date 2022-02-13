@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
+import ModalCardAdd from './modal-card-add';
 import { makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal } from '../../utils/mock';
-import Card from './card';
 import thunk from 'redux-thunk';
 import { api } from '../../services/api';
 import { configureMockStore } from '@jedmao/redux-mock-store';
@@ -37,21 +37,21 @@ const store = mockStore({
 
 const mockGuitar = makeFakeGuitar();
 
-describe('Component: Card', () => {
+describe('Component: ModalCardAdd', () => {
 
   it('should render correctly', () => {
 
     render(
       <Provider store={store}>
-        <Card
+        <ModalCardAdd
           guitar={mockGuitar}
-          handleClickAddCard={jest.fn()}
+          setShowModalCardAdd={jest.fn}
+          setShowModalSuccess={jest.fn}
         />
-      </Provider>,
-    );
+      </Provider>);
 
-    expect(screen.getByText(mockGuitar.name)).toBeInTheDocument();
-    expect(screen.getByText('Подробнее')).toBeInTheDocument();
+    expect(screen.getByText('Добавить товар в корзину')).toBeInTheDocument();
+
   });
 
 });

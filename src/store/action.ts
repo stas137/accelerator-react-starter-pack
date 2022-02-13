@@ -1,4 +1,4 @@
-import {CommentsType, GuitarsType, GuitarType} from '../types/guitars';
+import { CartType, CommentsType, GuitarsType, GuitarType } from '../types/guitars';
 import {ActionType} from '../types/action';
 import {AppRoute} from '../utils/const';
 import {GuitarsQuery} from '../types/guitars-query';
@@ -62,6 +62,26 @@ export const changeSortDirection = (sortDirection: string) => ({
 export const changeCurrentPage = (currentPage: number) => ({
   type: ActionType.ChangeCurrentPage,
   payload: currentPage,
+} as const);
+
+export const cartAddGuitar = (guitar: CartType) => ({
+  type: ActionType.CartAddGuitar,
+  payload: guitar,
+} as const);
+
+export const cartSubGuitar = (guitar: CartType) => ({
+  type: ActionType.CartSubGuitar,
+  payload: guitar,
+} as const);
+
+export const cartDelGuitar = (guitar: CartType) => ({
+  type: ActionType.CartDelGuitar,
+  payload: guitar,
+} as const);
+
+export const cartSetCountGuitar = (guitar: CartType) => ({
+  type: ActionType.CartSetCountGuitar,
+  payload: guitar,
 } as const);
 
 export const redirectToRoute = (url: AppRoute) => ({

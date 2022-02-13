@@ -7,7 +7,23 @@ export enum AppRoute {
   Main = '/',
   Product = '/product/:id',
   NotFound = '/not-found',
+  Cart = '/cart',
 }
+
+export const LIGHT333 = {
+  coupon: 'light-333',
+  discount: 333,
+};
+
+export const MEDIUM444 = {
+  coupon: 'medium-444',
+  discount: 444,
+};
+
+export const HEIGHT555 = {
+  coupon: 'height-555',
+  discount: 555,
+};
 
 export const RATING_MAX = 5;
 export const DELAY_MS = 500;

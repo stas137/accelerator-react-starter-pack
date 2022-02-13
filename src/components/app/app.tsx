@@ -5,6 +5,7 @@ import Product from '../product/product';
 import NotFound from '../not-found/not-found';
 import Header from '../header/header';
 import Footer from '../footer/footer';
+import Cart from '../cart/cart';
 
 
 function App(): JSX.Element {
@@ -18,6 +19,9 @@ function App(): JSX.Element {
         </Route>
         <Route exact path={AppRoute.Product}>
           <Product />
+        </Route>
+        <Route exact path={AppRoute.Cart}>
+          <Cart />
         </Route>
         <Route>
           <NotFound />

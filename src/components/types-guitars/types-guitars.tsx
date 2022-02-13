@@ -1,5 +1,5 @@
 import {PRICE_FOR_TYPE, PRICE_MAX, PRICE_MIN, TYPES_GUITARS_DATA} from '../../utils/const';
-import {getNameTypeGuitar, getTypesForStringCount} from '../../utils/common';
+import { getNameTypeFilterGuitar, getTypesForStringCount } from '../../utils/common';
 import {GuitarsQuery} from '../../types/guitars-query';
 
 type TypesGuitarsProps = {
@@ -8,16 +8,16 @@ type TypesGuitarsProps = {
   handleAddQueryParams: (queryParams: Partial<GuitarsQuery>) => void,
 };
 
-function TypesGuitars(props: TypesGuitarsProps): JSX.Element {
+function TypesGuitars({ typesGuitars, stringCount, handleAddQueryParams }: TypesGuitarsProps): JSX.Element {
   return (
     <fieldset className="catalog-filter__block">
       <legend className="catalog-filter__block-title">Тип гитар</legend>
       {
         TYPES_GUITARS_DATA.map((item) => {
-          const checked = props.typesGuitars.includes(item);
+          const checked = typesGuitars.includes(item);
 
-          const enabledType = props.stringCount.length
-            ? new Set(props.stringCount.map((stringCount) => getTypesForStringCount(stringCount)).flat(1))
+          const enabledType = stringCount.length
+            ? new Set(stringCount.map((stringCountItem) => getTypesForStringCount(stringCountItem)).flat(1))
             : new Set(TYPES_GUITARS_DATA);
 
           return (
@@ -30,7 +30,7 @@ function TypesGuitars(props: TypesGuitarsProps): JSX.Element {
                 checked={checked}
                 disabled={!enabledType.has(item)}
                 onChange={() => {
-                  const currentTypesGuitars = checked ? props.typesGuitars.filter((type) => type !== item) : [...props.typesGuitars, item];
+                  const currentTypesGuitars = checked ? typesGuitars.filter((type) => type !== item) : [...typesGuitars, item];
 
                   const priceForTypesGuitars: Array<{min: number, max: number}> = currentTypesGuitars.length
                     ? currentTypesGuitars.map((typeGuitar) => {
@@ -46,14 +46,14 @@ function TypesGuitars(props: TypesGuitarsProps): JSX.Element {
                   const minPrice = priceForTypesGuitars?.length ? Math.min(...priceForTypesGuitars.map((priceItem) => priceItem?.min)) : PRICE_MIN;
                   const maxPrice = priceForTypesGuitars?.length ? Math.max(...priceForTypesGuitars.map((priceItem) => priceItem?.max)) : PRICE_MAX;
 
-                  props.handleAddQueryParams({
+                  handleAddQueryParams({
                     type: currentTypesGuitars,
                     minPrice: minPrice,
                     maxPrice: maxPrice,
                   });
                 }}
               />
-              <label htmlFor={item}>{getNameTypeGuitar(item)}</label>
+              <label htmlFor={item}>{getNameTypeFilterGuitar(item)}</label>
             </div>
           );
         })

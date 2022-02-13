@@ -3,7 +3,7 @@ import {stringify, parse} from 'query-string';
 import {RequestAdapterReturnType} from '../types/request-adapter';
 import {RATING_NAME, STRING_COUNT_FOR_TYPE, TYPE_FOR_STRING_COUNT} from './const';
 import * as H from 'history';
-import {CommentsType, CommentType, GuitarsType, GuitarType} from '../types/guitars';
+import { CartType, CommentsType, CommentType, GuitarsType, GuitarType } from '../types/guitars';
 
 export const convertPath = (path: string): string => {
   const pathParts = path.split('/');
@@ -74,13 +74,25 @@ export const addQueryParams = (query: Partial<GuitarsQuery>, location: H.Locatio
   return newParams;
 };
 
-
-export const getNameTypeGuitar = (type: string): string => {
+export const getNameTypeFilterGuitar = (type: string): string => {
   switch (type) {
     case 'acoustic':
       return 'Акустические гитары';
     case 'electric':
-      return 'Электрические';
+      return 'Электрогитары';
+    case 'ukulele':
+      return 'Укулеле';
+    default:
+      return '';
+  }
+};
+
+export const getNameTypeGuitar = (type: string): string => {
+  switch (type) {
+    case 'acoustic':
+      return 'Акустическая гитара';
+    case 'electric':
+      return 'Электрогитара';
     case 'ukulele':
       return 'Укулеле';
     default:
@@ -119,6 +131,9 @@ export const getRange = (n: number) => Array.from({length: n}, (_, index) => ind
 
 const compareLowToHigh = (a: GuitarType, b: GuitarType): number => (a.name > b.name ? 1 : -1);
 export const sortedGuitars = (guitars: GuitarsType): GuitarsType => [...guitars].sort(compareLowToHigh);
+
+const compareCartLowToHigh = (a: CartType, b: CartType): number => (a.name > b.name ? 1 : -1);
+export const sortedCartGuitars = (guitars: CartType[]): CartType[] => [...guitars].sort(compareCartLowToHigh);
 
 const compareDateHighToLow = (a: CommentType, b: CommentType): number => ((new Date(b.createAt)).getTime() - (new Date(a.createAt)).getTime());
 export const getSortedGuitarsComments = (comments: CommentsType) => [...comments].sort(compareDateHighToLow);

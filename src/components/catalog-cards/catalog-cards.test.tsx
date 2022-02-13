@@ -1,8 +1,41 @@
 import {render, screen} from '@testing-library/react';
 import {createMemoryHistory} from 'history';
 import {Router} from 'react-router-dom';
-import {makeFakeGuitars} from '../../utils/mock';
+import { makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal } from '../../utils/mock';
 import CatalogCards from './catalog-cards';
+import thunk from 'redux-thunk';
+import { api } from '../../services/api';
+import { configureMockStore } from '@jedmao/redux-mock-store';
+import { State } from '../../types/state';
+import { AnyAction } from 'redux';
+import { DEFAULT_QUERIES } from '../../utils/const';
+import { Provider } from 'react-redux';
+
+const middlewares = [thunk.withExtraArgument(api)];
+const mockStore = configureMockStore<State, AnyAction>(middlewares);
+
+const store = mockStore({
+  DATA: {
+    guitars: makeFakeGuitars(),
+    total: makeFakeTotal(),
+    loading: false,
+    error: false,
+    params: DEFAULT_QUERIES,
+  },
+  BOOK: {
+    guitar: makeFakeGuitar(),
+  },
+  SEARCH: {
+    guitars: makeFakeGuitars(),
+    total: makeFakeTotal(),
+    loading: false,
+    error: false,
+    params: DEFAULT_QUERIES,
+  },
+  CART: {
+    guitars: makeFakeCartGuitars(),
+  },
+});
 
 const history = createMemoryHistory();
 
@@ -16,13 +49,15 @@ describe('Component: CatalogCards', () => {
     const error = false;
 
     render(
-      <Router history={history}>
-        <CatalogCards
-          guitars={mockGuitars}
-          loading={loading}
-          error={error}
-        />
-      </Router>,
+      <Provider store={store}>
+        <Router history={history}>
+          <CatalogCards
+            guitars={mockGuitars}
+            loading={loading}
+            error={error}
+          />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByText(mockGuitars[0].name)).toBeInTheDocument();
