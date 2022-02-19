@@ -10,8 +10,8 @@ import {Link} from 'react-router-dom';
 import {RATING_MAX} from '../../utils/const';
 import {Tabs} from '../tabs/tabs';
 import {Reviews} from '../reviews/reviews';
-import ModalCardAdd from '../modal-card-add/modal-card-add';
-import ModalSuccess from '../modal-success/modal-success';
+import { setGuitarModal, setShowModalCardAdd } from '../../store/action';
+import { GuitarType } from '../../types/guitars';
 
 const mapStateToProps = (state: State) => ({
   guitar: getGuitar(state),
@@ -21,15 +21,18 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
   onLoadGuitar(id: number) {
     dispatch(fetchGuitarAction(id));
   },
+  onSetGuitarModal(guitar: GuitarType) {
+    dispatch(setGuitarModal(guitar));
+  },
+  onSetShowModalCardAdd(flag: boolean) {
+    dispatch(setShowModalCardAdd(flag));
+  },
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
-
-  const [showModalCardAdd, setShowModalCardAdd] = useState<boolean>(false);
-  const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
+function Product({guitar, onLoadGuitar, onSetGuitarModal, onSetShowModalCardAdd}: PropsFromRedux):JSX.Element {
 
   const { id } = useParams<{ id?: string }>();
 
@@ -40,13 +43,6 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
   useEffect(() => {
     onLoadGuitar(Number(id));
   }, [id, onLoadGuitar]);
-
-  useEffect(() => {
-    const body = document.querySelector('body');
-    if (body) {
-      body.style.overflow = showModalCardAdd || showModalSuccess ? 'hidden' : 'auto';
-    }
-  }, [showModalCardAdd, showModalSuccess]);
 
   const handlerChangeTab = (tab: string) => {
     switch (tab) {
@@ -62,8 +58,9 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
     }
   };
 
-  const handleClickAddCard = (showModalCardAddData: boolean) => {
-    setShowModalCardAdd(showModalCardAddData);
+  const handleClickAddCard = () => {
+    onSetGuitarModal(guitar);
+    onSetShowModalCardAdd(true);
   };
 
   return (
@@ -119,25 +116,13 @@ function Product({guitar, onLoadGuitar}: PropsFromRedux):JSX.Element {
           <div className="product-container__price-wrapper">
             <p className="product-container__price-info product-container__price-info--title">Цена:</p>
             <p className="product-container__price-info product-container__price-info--value">{guitar.price} ₽</p>
-            <span className="button button--red button--big product-container__button" onClick={ () => {handleClickAddCard(true);} }>Добавить в корзину</span>
+            <span className="button button--red button--big product-container__button" onClick={ () => {handleClickAddCard();} }>Добавить в корзину</span>
           </div>
         </div>
 
         <Reviews
           guitar={guitar}
         />
-
-        {
-          showModalCardAdd
-            ? <ModalCardAdd guitar={guitar} setShowModalCardAdd={setShowModalCardAdd} setShowModalSuccess={setShowModalSuccess} />
-            : null
-        }
-
-        {
-          showModalSuccess
-            ? <ModalSuccess setShowModalSuccess={setShowModalSuccess} />
-            : null
-        }
 
       </div>
     </main>

@@ -1,6 +1,7 @@
 export enum APIRoute {
   Guitars = '/guitars',
   Comments = '/comments',
+  Coupons = '/coupons',
 }
 
 export enum AppRoute {
@@ -9,21 +10,6 @@ export enum AppRoute {
   NotFound = '/not-found',
   Cart = '/cart',
 }
-
-export const LIGHT333 = {
-  coupon: 'light-333',
-  discount: 333,
-};
-
-export const MEDIUM444 = {
-  coupon: 'medium-444',
-  discount: 444,
-};
-
-export const HEIGHT555 = {
-  coupon: 'height-555',
-  discount: 555,
-};
 
 export const RATING_MAX = 5;
 export const DELAY_MS = 500;
@@ -73,3 +59,8 @@ export const MODAL_REVIEW_MARGIN_BOTTOM = 50;
 export const MODAL_THANKS_HEIGHT = 410;
 export const MODAL_THANKS_WIDTH = 550;
 export const MODAL_THANKS_MARGIN_BOTTOM = 50;
+
+export const MODAL_CARD_HEIGHT = 440;
+export const MODAL_CARD_WIDTH = 550;
+export const MODAL_CARD_MARGIN_BOTTOM = 50;
+

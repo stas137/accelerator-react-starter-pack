@@ -15,7 +15,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type CardPropsType = {
   guitar: GuitarType,
-  handleClickAddCard: (guitar: GuitarType, showModalAddCard: boolean) => void;
+  handleClickAddCard: (guitar: GuitarType) => void;
 }
 
 function Card({ guitar, cartGuitars, handleClickAddCard }: CardPropsType & PropsFromRedux):JSX.Element {
@@ -56,10 +56,10 @@ function Card({ guitar, cartGuitars, handleClickAddCard }: CardPropsType & Props
         {
           cartGuitars.find((item) => item.vendorCode === guitar.vendorCode)
             ? (
-              <span className="button button--red-border button--mini button--in-cart" >В Корзине</span>
+              <span className="button button--red-border button--mini button--in-cart" onClick={ () => history.push('/cart') } >В Корзине</span>
             )
             : (
-              <span className="button button--red button--mini button--add-to-cart" onClick={ () => {handleClickAddCard(guitar, true);} }>
+              <span className="button button--red button--mini button--add-to-cart" onClick={ () => {handleClickAddCard(guitar);} }>
                 Купить
               </span>
             )

@@ -84,6 +84,31 @@ export const cartSetCountGuitar = (guitar: CartType) => ({
   payload: guitar,
 } as const);
 
+export const loadCoupon = (coupon: string) => ({
+  type: ActionType.LoadCoupon,
+  payload: coupon,
+} as const);
+
+export const setGuitarModal = (guitar: GuitarType) => ({
+  type: ActionType.SetGuitarModal,
+  payload: guitar,
+} as const);
+
+export const setShowModalCardAdd = (flag: boolean) => ({
+  type: ActionType.SetShowModalCardAdd,
+  payload: flag,
+} as const);
+
+export const setShowModalCardDel = (flag: boolean) => ({
+  type: ActionType.SetShowModalCardDel,
+  payload: flag,
+} as const);
+
+export const setShowModalSuccess = (flag: boolean) => ({
+  type: ActionType.SetShowModalSuccess,
+  payload: flag,
+} as const);
+
 export const redirectToRoute = (url: AppRoute) => ({
   type: ActionType.RedirectToRoute,
   payload: url,

@@ -2,33 +2,46 @@ import { CartType, GuitarType } from '../../types/guitars';
 import { convertPath, getNameTypeGuitar } from '../../utils/common';
 import { KeyboardEvent, MouseEvent } from 'react';
 import { ThunkAppDispatch } from '../../types/action';
-import { cartAddGuitar } from '../../store/action';
+import { cartAddGuitar, setShowModalCardAdd, setShowModalSuccess } from '../../store/action';
 import { connect, ConnectedProps } from 'react-redux';
+import {
+  MODAL_CARD_HEIGHT,
+  MODAL_CARD_MARGIN_BOTTOM,
+  MODAL_CARD_WIDTH
+} from '../../utils/const';
 
 type ModalCardAddPropsType = {
   guitar: GuitarType,
-  setShowModalCardAdd: (flag: boolean) => void,
-  setShowModalSuccess: (flag: boolean) => void,
 }
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
   onCardAddGuitar(cartGuitar: CartType) {
     dispatch(cartAddGuitar(cartGuitar));
   },
+  onSetShowModalCardAdd(flag: boolean) {
+    dispatch(setShowModalCardAdd(flag));
+  },
+  onSetShowModalSuccess(flag: boolean) {
+    dispatch(setShowModalSuccess(flag));
+  },
 });
 
 const connector = connect(null, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function ModalCardAdd({ guitar, setShowModalCardAdd, setShowModalSuccess, onCardAddGuitar }: ModalCardAddPropsType & PropsFromRedux): JSX.Element {
+function ModalCardAdd({ guitar, onCardAddGuitar, onSetShowModalCardAdd, onSetShowModalSuccess }: ModalCardAddPropsType & PropsFromRedux): JSX.Element {
+
+  const handleClickCloseButton = (evt: MouseEvent<HTMLElement>) => {
+    onSetShowModalCardAdd(false);
+  };
 
   const handlerClickModalOverlay = (evt: MouseEvent<HTMLElement>) => {
-    setShowModalCardAdd(false);
+    onSetShowModalCardAdd(false);
   };
 
   const handlerKeyDownButton = (evt: KeyboardEvent<HTMLButtonElement>) => {
     if (evt.key === 'Escape') {
-      setShowModalCardAdd(false);
+      onSetShowModalCardAdd(false);
     }
   };
 
@@ -41,12 +54,13 @@ function ModalCardAdd({ guitar, setShowModalCardAdd, setShowModalSuccess, onCard
 
   const handlerClickAddButton = () => {
     onCardAddGuitar({ ...guitar, count: 1});
-    setShowModalCardAdd(false);
-    setShowModalSuccess(true);
+
+    onSetShowModalCardAdd(false);
+    onSetShowModalSuccess(true);
   };
 
   return (
-    <div style={{position: 'relative', width: 550, height: 440, marginBottom: 50}}>
+    <div style={{position: 'relative', width: MODAL_CARD_WIDTH, height: MODAL_CARD_HEIGHT, marginBottom: MODAL_CARD_MARGIN_BOTTOM}}>
       <div className="modal is-active modal-for-ui-kit">
         <div className="modal__wrapper">
           <div className="modal__overlay" data-close-modal onClick={handlerClickModalOverlay}></div>
@@ -78,7 +92,7 @@ function ModalCardAdd({ guitar, setShowModalCardAdd, setShowModalSuccess, onCard
             </div>
             <button className="modal__close-btn button-cross" type="button" aria-label="Закрыть">
               <span className="button-cross__icon"></span>
-              <span className="modal__close-btn-interactive-area" onClick={() => {setShowModalCardAdd(false);}}></span>
+              <span className="modal__close-btn-interactive-area" onClick={handleClickCloseButton}></span>
             </button>
           </div>
         </div>
@@ -88,3 +102,5 @@ function ModalCardAdd({ guitar, setShowModalCardAdd, setShowModalSuccess, onCard
 }
 
 export default connector(ModalCardAdd);
+
+//onClick={() => {setShowModalCardAdd(false);}}

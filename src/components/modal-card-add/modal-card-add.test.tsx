@@ -45,8 +45,6 @@ describe('Component: ModalCardAdd', () => {
       <Provider store={store}>
         <ModalCardAdd
           guitar={mockGuitar}
-          setShowModalCardAdd={jest.fn}
-          setShowModalSuccess={jest.fn}
         />
       </Provider>);
 

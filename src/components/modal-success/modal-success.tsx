@@ -1,21 +1,30 @@
 import { KeyboardEvent, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
+import { MODAL_THANKS_HEIGHT, MODAL_THANKS_MARGIN_BOTTOM, MODAL_THANKS_WIDTH } from '../../utils/const';
+import { ThunkAppDispatch } from '../../types/action';
+import { setShowModalSuccess } from '../../store/action';
+import { connect, ConnectedProps } from 'react-redux';
 
-type ModalSuccessProps = {
-  setShowModalSuccess: (flag: boolean) => void,
-}
+const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  onSetShowModalSuccess(flag: boolean) {
+    dispatch(setShowModalSuccess(flag));
+  },
+});
 
-function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
+const connector = connect(null, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function ModalSuccess({ onSetShowModalSuccess }: PropsFromRedux): JSX.Element {
 
   const history = useHistory();
 
   const handlerClickModalOverlay = (evt: MouseEvent<HTMLElement>) => {
-    setShowModalSuccess(false);
+    onSetShowModalSuccess(false);
   };
 
   const handlerKeyDownButton = (evt: KeyboardEvent<HTMLButtonElement>) => {
     if (evt.key === 'Escape') {
-      setShowModalSuccess(false);
+      onSetShowModalSuccess(false);
     }
   };
 
@@ -27,7 +36,7 @@ function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
   };
 
   return (
-    <div style={{position: 'relative', width: 550, height: 410, marginBottom: 50}}>
+    <div style={{position: 'relative', width: MODAL_THANKS_WIDTH, height: MODAL_THANKS_HEIGHT, marginBottom: MODAL_THANKS_MARGIN_BOTTOM}}>
       <div className="modal is-active modal--success modal-for-ui-kit">
         <div className="modal__wrapper">
           <div className="modal__overlay" data-close-modal onClick={handlerClickModalOverlay}></div>
@@ -43,7 +52,7 @@ function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
                 id="button-to-cart"
                 onKeyDown={handlerKeyDownButton}
                 onClick={async() => {
-                  await setShowModalSuccess(false);
+                  await onSetShowModalSuccess(false);
                   history.push('/cart');
                 }}
               >
@@ -54,7 +63,7 @@ function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
                 onBlur={handlerBlurButton}
                 onKeyDown={handlerKeyDownButton}
                 onClick={async () => {
-                  await setShowModalSuccess(false);
+                  await onSetShowModalSuccess(false);
                   history.push('/');
                 }}
               >
@@ -63,7 +72,7 @@ function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
             </div>
             <button className="modal__close-btn button-cross" type="button" aria-label="Закрыть">
               <span className="button-cross__icon"></span>
-              <span className="modal__close-btn-interactive-area" onClick={() => { setShowModalSuccess(false); }}></span>
+              <span className="modal__close-btn-interactive-area" onClick={() => { onSetShowModalSuccess(false); }}></span>
             </button>
           </div>
         </div>
@@ -72,4 +81,4 @@ function ModalSuccess({ setShowModalSuccess }: ModalSuccessProps): JSX.Element {
   );
 }
 
-export default ModalSuccess;
+export default connector(ModalSuccess);

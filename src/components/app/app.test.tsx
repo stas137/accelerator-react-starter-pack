@@ -9,7 +9,7 @@ import {api} from '../../services/api';
 import {configureMockStore} from '@jedmao/redux-mock-store';
 import {State} from '../../types/state';
 import {AnyAction} from 'redux';
-import { makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal } from '../../utils/mock';
+import {makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal} from '../../utils/mock';
 import {AppRoute, DEFAULT_QUERIES} from '../../utils/const';
 
 const middlewares = [thunk.withExtraArgument(api)];
@@ -37,6 +37,12 @@ const store = mockStore({
   },
   CART: {
     guitars: makeFakeCartGuitars(),
+  },
+  MODAL: {
+    guitar: makeFakeGuitar(),
+    showModalCardAdd: false,
+    showModalCardDel: false,
+    showModalSuccess: false,
   },
 });
 

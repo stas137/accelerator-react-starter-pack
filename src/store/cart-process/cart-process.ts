@@ -3,6 +3,7 @@ import {CardProcess} from '../../types/guitars';
 
 const initialState: CardProcess = {
   guitars: [],
+  discountForCoupon: '',
 };
 
 const cartProcess = (state: CardProcess = initialState, action: Actions): CardProcess => {
@@ -45,6 +46,11 @@ const cartProcess = (state: CardProcess = initialState, action: Actions): CardPr
             ...action.payload,
           },
         ],
+      };
+    case ActionType.LoadCoupon:
+      return {
+        ...state,
+        discountForCoupon: action.payload,
       };
     default:
       return state;

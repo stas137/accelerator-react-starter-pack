@@ -41,6 +41,7 @@ const store = mockStore({
   },
   CART: {
     guitars: makeFakeCartGuitars(),
+    discountForCoupon: '',
   },
 });
 

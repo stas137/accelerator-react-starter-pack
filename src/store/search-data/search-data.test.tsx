@@ -17,7 +17,7 @@ const mockGuitar = makeFakeGuitar();
 const mockGuitars = makeFakeGuitars();
 const mockQueryParams = makeFakeQueryParams();
 
-describe('Reducer searchData:', () => {
+describe('Reducer modalData:', () => {
   it('with incorrect ActionType should return initial state', () => {
     expect(searchData(void 0, { type: ActionType.LoadGuitar, payload: mockGuitar })).toEqual(initialState);
   });

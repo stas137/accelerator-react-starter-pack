@@ -1,33 +1,36 @@
-import { CartType } from '../../types/guitars';
+import { CartType, GuitarType } from '../../types/guitars';
 import { convertPath, getNameTypeGuitar } from '../../utils/common';
 import { KeyboardEvent, MouseEvent } from 'react';
 import { ThunkAppDispatch } from '../../types/action';
-import { cartDelGuitar } from '../../store/action';
+import { cartDelGuitar, setShowModalCardDel } from '../../store/action';
 import { connect, ConnectedProps } from 'react-redux';
+import { MODAL_CARD_HEIGHT, MODAL_CARD_MARGIN_BOTTOM, MODAL_CARD_WIDTH } from '../../utils/const';
 
 type ModalCardDelProps = {
-  guitar: CartType,
-  setShowModalCardDel: (flag: boolean) => void,
+  guitar: GuitarType,
 }
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
   onCardDelGuitar(cartGuitar: CartType) {
     dispatch(cartDelGuitar(cartGuitar));
   },
+  onSetShowModalCardDel(flag: boolean) {
+    dispatch(setShowModalCardDel(flag));
+  },
 });
 
 const connector = connect(null, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function ModalCardDel({ guitar, setShowModalCardDel, onCardDelGuitar }: ModalCardDelProps & PropsFromRedux): JSX.Element {
+function ModalCardDel({ guitar, onCardDelGuitar, onSetShowModalCardDel }: ModalCardDelProps & PropsFromRedux): JSX.Element {
 
   const handlerClickModalOverlay = (evt: MouseEvent<HTMLElement>) => {
-    setShowModalCardDel(false);
+    onSetShowModalCardDel(false);
   };
 
   const handlerKeyDownButton = (evt: KeyboardEvent<HTMLButtonElement>) => {
     if (evt.key === 'Escape') {
-      setShowModalCardDel(false);
+      onSetShowModalCardDel(false);
     }
   };
 
@@ -40,11 +43,11 @@ function ModalCardDel({ guitar, setShowModalCardDel, onCardDelGuitar }: ModalCar
 
   const handlerClickDelButton = () => {
     onCardDelGuitar({...guitar, count: 1});
-    setShowModalCardDel(false);
+    onSetShowModalCardDel(false);
   };
 
   return (
-    <div style={{position: 'relative', width: 550, height: 440, marginBottom: 50}}>
+    <div style={{position: 'relative', width: MODAL_CARD_WIDTH, height: MODAL_CARD_HEIGHT, marginBottom: MODAL_CARD_MARGIN_BOTTOM}}>
       <div className="modal is-active modal-for-ui-kit">
         <div className="modal__wrapper">
           <div className="modal__overlay" data-close-modal onClick={handlerClickModalOverlay}></div>
@@ -69,7 +72,7 @@ function ModalCardDel({ guitar, setShowModalCardDel, onCardDelGuitar }: ModalCar
                 id="button-card-del"
                 autoFocus
                 onKeyDown={handlerKeyDownButton}
-                onClick={() => { setShowModalCardDel(false); }}
+                onClick={() => { onSetShowModalCardDel(false); }}
               >
                 Продолжить покупки
               </button>
@@ -82,7 +85,7 @@ function ModalCardDel({ guitar, setShowModalCardDel, onCardDelGuitar }: ModalCar
               onKeyDown={handlerKeyDownButton}
             >
               <span className="button-cross__icon"></span>
-              <span className="modal__close-btn-interactive-area" onClick={() => { setShowModalCardDel(false); }}></span>
+              <span className="modal__close-btn-interactive-area" onClick={() => { onSetShowModalCardDel(false); }}></span>
             </button>
           </div>
         </div>

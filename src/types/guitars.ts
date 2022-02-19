@@ -50,6 +50,14 @@ export type CartType = GuitarType & {
 
 export type CardProcess = {
   guitars: CartType[],
+  discountForCoupon: string,
+};
+
+export type ModalData = {
+  guitar: GuitarType,
+  showModalCardAdd: boolean,
+  showModalCardDel: boolean,
+  showModalSuccess: boolean,
 };
 
 export type GuitarsType = GuitarType[];

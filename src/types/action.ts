@@ -16,7 +16,12 @@ import {
   cartAddGuitar,
   cartSubGuitar,
   cartDelGuitar,
-  cartSetCountGuitar
+  cartSetCountGuitar,
+  loadCoupon,
+  setGuitarModal,
+  setShowModalCardAdd,
+  setShowModalCardDel,
+  setShowModalSuccess
 } from '../store/action';
 import {ThunkAction, ThunkDispatch} from '@reduxjs/toolkit';
 import {AxiosInstance} from 'axios';
@@ -40,7 +45,12 @@ export enum ActionType {
   CartAddGuitar = 'main/cartAddGuitar',
   CartSubGuitar = 'main/cartSubGuitar',
   CartDelGuitar = 'main/cartDelGuitar',
-  CartSetCountGuitar = 'main/cartSetCountGuitar'
+  CartSetCountGuitar = 'main/cartSetCountGuitar',
+  LoadCoupon = 'main/loadCoupon',
+  SetGuitarModal = 'main/setGuitarModal',
+  SetShowModalCardAdd = 'main/setShowModalCardAdd',
+  SetShowModalCardDel = 'main/setShowModalCardDel',
+  SetShowModalSuccess = 'main/setShowModalSuccess'
 }
 
 export type Actions =
@@ -61,7 +71,12 @@ export type Actions =
   | ReturnType<typeof cartAddGuitar>
   | ReturnType<typeof cartSubGuitar>
   | ReturnType<typeof cartDelGuitar>
-  | ReturnType<typeof cartSetCountGuitar>;
+  | ReturnType<typeof cartSetCountGuitar>
+  | ReturnType<typeof loadCoupon>
+  | ReturnType<typeof setGuitarModal>
+  | ReturnType<typeof setShowModalCardAdd>
+  | ReturnType<typeof setShowModalCardDel>
+  | ReturnType<typeof setShowModalSuccess>;
 
 export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
 export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;

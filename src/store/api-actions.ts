@@ -1,5 +1,6 @@
 import {ThunkActionResult} from '../types/action';
 import {
+  loadCoupon,
   loadGuitar,
   loadGuitars,
   loadGuitarsError,
@@ -65,5 +66,17 @@ export const fetchGuitarCommentAction = (userName: string, advantage: string, di
 
     } catch {
       dispatch(redirectToRoute(AppRoute.NotFound));
+    }
+  };
+
+export const fetchCouponAction = (coupon: string): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+
+    try {
+      const {data} = await api.post(APIRoute.Coupons, { coupon });
+      dispatch(loadCoupon(data));
+    }
+    catch {
+      dispatch(loadCoupon(''));
     }
   };

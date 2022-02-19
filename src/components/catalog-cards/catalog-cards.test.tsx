@@ -1,6 +1,6 @@
-import {render, screen} from '@testing-library/react';
-import {createMemoryHistory} from 'history';
-import {Router} from 'react-router-dom';
+import { render, screen } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
 import { makeFakeCartGuitars, makeFakeGuitar, makeFakeGuitars, makeFakeTotal } from '../../utils/mock';
 import CatalogCards from './catalog-cards';
 import thunk from 'redux-thunk';
@@ -35,10 +35,15 @@ const store = mockStore({
   CART: {
     guitars: makeFakeCartGuitars(),
   },
+  MODAL: {
+    guitar: makeFakeGuitar(),
+    showModalCardAdd: false,
+    showModalCardDel: false,
+    showModalSuccess: false,
+  },
 });
 
 const history = createMemoryHistory();
-
 const mockGuitars = makeFakeGuitars();
 
 describe('Component: CatalogCards', () => {
@@ -70,13 +75,15 @@ describe('Component: CatalogCards', () => {
     const error = false;
 
     render(
-      <Router history={history}>
-        <CatalogCards
-          guitars={mockGuitars}
-          loading={loading}
-          error={error}
-        />
-      </Router>,
+      <Provider store={store}>
+        <Router history={history}>
+          <CatalogCards
+            guitars={mockGuitars}
+            loading={loading}
+            error={error}
+          />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByText('Loading')).toBeInTheDocument();
@@ -89,13 +96,15 @@ describe('Component: CatalogCards', () => {
     const error = true;
 
     render(
-      <Router history={history}>
-        <CatalogCards
-          guitars={mockGuitars}
-          loading={loading}
-          error={error}
-        />
-      </Router>,
+      <Provider store={store}>
+        <Router history={history}>
+          <CatalogCards
+            guitars={mockGuitars}
+            loading={loading}
+            error={error}
+          />
+        </Router>
+      </Provider>,
     );
 
     expect(screen.getByText('Error loading. Try later')).toBeInTheDocument();

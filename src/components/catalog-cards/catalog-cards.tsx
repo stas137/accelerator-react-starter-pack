@@ -1,9 +1,9 @@
 import Card from '../card/card';
 import { GuitarsType, GuitarType } from '../../types/guitars';
 import Loading from '../loading/loading';
-import { useEffect, useState } from 'react';
-import ModalCardAdd from '../modal-card-add/modal-card-add';
-import ModalSuccess from '../modal-success/modal-success';
+import { ThunkAppDispatch } from '../../types/action';
+import { connect, ConnectedProps } from 'react-redux';
+import { setGuitarModal, setShowModalCardAdd } from '../../store/action';
 
 type CatalogCardsPropsType = {
   guitars: GuitarsType,
@@ -11,34 +11,23 @@ type CatalogCardsPropsType = {
   error: boolean,
 }
 
-function CatalogCards({guitars, loading, error}: CatalogCardsPropsType):JSX.Element {
+const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  onSetGuitarModal(guitar: GuitarType) {
+    dispatch(setGuitarModal(guitar));
+  },
+  onSetShowModalCardAdd(flag: boolean) {
+    dispatch(setShowModalCardAdd(flag));
+  },
+});
 
-  const [showModalCardAdd, setShowModalCardAdd] = useState<boolean>(false);
-  const [showModalSuccess, setShowModalSuccess] = useState<boolean>(false);
+const connector = connect(null, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-  const [guitarModal, setGuitarModal] = useState<GuitarType>({
-    id: 0,
-    name: '',
-    vendorCode: '',
-    type: '',
-    description: '',
-    previewImg: '',
-    stringCount: 0,
-    rating: 0,
-    price: 0,
-    comments: [],
-  });
+function CatalogCards({guitars, loading, error, onSetGuitarModal, onSetShowModalCardAdd}: CatalogCardsPropsType & PropsFromRedux):JSX.Element {
 
-  useEffect(() => {
-    const body = document.querySelector('body');
-    if (body) {
-      body.style.overflow = showModalCardAdd || showModalSuccess ? 'hidden' : 'auto';
-    }
-  }, [showModalCardAdd, showModalSuccess]);
-
-  const handleClickAddCard = (guitarModalData: GuitarType, showModalCardAddData: boolean) => {
-    setGuitarModal(guitarModalData);
-    setShowModalCardAdd(showModalCardAddData);
+  const handleClickAddCard = (guitarModalData: GuitarType) => {
+    onSetGuitarModal(guitarModalData);
+    onSetShowModalCardAdd(true);
   };
 
   if (loading) {
@@ -58,34 +47,12 @@ function CatalogCards({guitars, loading, error}: CatalogCardsPropsType):JSX.Elem
   }
 
   return (
-    <>
-      <div className="cards catalog__cards">
-        {
-          guitars.map((guitar) => <Card key={guitar.id} guitar={guitar} handleClickAddCard={handleClickAddCard} />)
-        }
-      </div>
+    <div className="cards catalog__cards">
       {
-        showModalCardAdd
-          ? (
-            <ModalCardAdd
-              guitar={guitarModal}
-              setShowModalCardAdd={setShowModalCardAdd}
-              setShowModalSuccess={setShowModalSuccess}
-            />
-          )
-          : null
+        guitars.map((guitar) => <Card key={guitar.id} guitar={guitar} handleClickAddCard={handleClickAddCard} />)
       }
-      {
-        showModalSuccess
-          ? (
-            <ModalSuccess
-              setShowModalSuccess={setShowModalSuccess}
-            />
-          )
-          : null
-      }
-    </>
+    </div>
   );
 }
 
-export default CatalogCards;
+export default connector(CatalogCards);
