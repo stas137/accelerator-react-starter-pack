@@ -52,7 +52,7 @@ function CartItem({ guitar, handleClickDelCard, onCardAddGuitar, onCardSubGuitar
   };
 
   const handlerChangeInput = (evt: ChangeEvent<HTMLInputElement>) => {
-    if (Number(evt.target.value) > 0 && Number(evt.target.value) < 99) {
+    if (Number(evt.target.value) >= 0 && Number(evt.target.value) < 99) {
       setCountValue(Number(evt.target.value));
       onCardSetCountGuitar({ ...guitar, count: Number(evt.target.value) });
     }
@@ -85,9 +85,9 @@ function CartItem({ guitar, handleClickDelCard, onCardAddGuitar, onCardSubGuitar
           placeholder={countValue.toString()}
           id="4-count"
           name="4-count"
-          min="1"
+          min="0"
           max="99"
-          value={countValue}
+          value={countValue === 0 ? '' : countValue}
           onChange={handlerChangeInput}
         />
         <button className="quantity__button" aria-label="Увеличить количество" onClick={handlerClickButtonAdd}>

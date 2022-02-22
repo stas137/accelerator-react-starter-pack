@@ -96,6 +96,18 @@ function Header({guitars, cartGuitars, loading, error, onLoadSearchGuitars, onLo
     history.push(`/product/${guitarId}`);
   };
 
+  const handleKeyDownListItem = (key:string, guitarId: number) => {
+
+    if (key === 'Enter') {
+      if (searchRef.current !== null) {
+        searchRef.current.value = '';
+        setSearchValue('');
+      }
+
+      history.push(`/product/${guitarId}`);
+    }
+  };
+
   const handleBlurInput = (e: ChangeEvent<HTMLInputElement>) => {
     if (keyTab !== 'tab') {
       setSearchValue('');
@@ -166,6 +178,7 @@ function Header({guitars, cartGuitars, loading, error, onLoadSearchGuitars, onLo
             searchValue={searchValue}
             guitars={guitarsList}
             handleClickListItem={handleClickListItem}
+            handleKeyDownListItem={handleKeyDownListItem}
           />
 
         </div>

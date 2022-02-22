@@ -23,6 +23,7 @@ describe('Component: SelectList', () => {
           loading={loading}
           error={error}
           handleClickListItem={jest.fn}
+          handleKeyDownListItem={jest.fn}
         />
       </Router>,
     );
@@ -44,6 +45,7 @@ describe('Component: SelectList', () => {
           loading={loading}
           error={error}
           handleClickListItem={jest.fn}
+          handleKeyDownListItem={jest.fn}
         />
       </Router>,
     );
@@ -65,6 +67,7 @@ describe('Component: SelectList', () => {
           loading={loading}
           error={error}
           handleClickListItem={jest.fn}
+          handleKeyDownListItem={jest.fn}
         />
       </Router>,
     );

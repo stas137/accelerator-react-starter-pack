@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {KeyboardEvent} from 'react';
 import {GuitarsType} from '../../types/guitars';
 
 type SelectListType = {
@@ -7,9 +7,10 @@ type SelectListType = {
   searchValue: string,
   guitars: GuitarsType,
   handleClickListItem: (id: number) => void,
+  handleKeyDownListItem: (key: string, id: number) => void,
 }
 
-function SelectList({loading, error, searchValue, guitars, handleClickListItem}: SelectListType): JSX.Element {
+function SelectList({loading, error, searchValue, guitars, handleClickListItem, handleKeyDownListItem}: SelectListType): JSX.Element {
 
   if (loading) {
     return (
@@ -47,6 +48,7 @@ function SelectList({loading, error, searchValue, guitars, handleClickListItem}:
               tabIndex={0}
               key={item.id}
               onMouseDown={() => handleClickListItem(item.id)}
+              onKeyDown={ (evt: KeyboardEvent<HTMLElement>) => handleKeyDownListItem(evt.key, item.id)}
             >
               {item.name}
             </li>))
