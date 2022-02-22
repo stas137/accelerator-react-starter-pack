@@ -52,7 +52,7 @@ function CartItem({ guitar, handleClickDelCard, onCardAddGuitar, onCardSubGuitar
   };
 
   const handlerChangeInput = (evt: ChangeEvent<HTMLInputElement>) => {
-    if (Number(evt.target.value) >= 0 && Number(evt.target.value) < 99) {
+    if (Number(evt.target.value) >= 0 && Number(evt.target.value) <= 99) {
       setCountValue(Number(evt.target.value));
       onCardSetCountGuitar({ ...guitar, count: Number(evt.target.value) });
     }
